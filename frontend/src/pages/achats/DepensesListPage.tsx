@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Download, Filter, XCircle, ChevronLeft, ChevronRight,
-  FileText, Edit2, CreditCard, CheckCircle, Copy, Trash2, Eye, Truck
+  Edit2, CreditCard, CheckCircle, Copy, Trash2, Eye, Truck
 } from 'lucide-react';
 import { fournisseursApi, exportFournisseurs, type FournisseurItem } from '../../lib/api';
 import { exportExpensePDF } from '../../lib/exportPDF';
@@ -126,7 +126,7 @@ export default function DepensesListPage() {
         ]}
         title="Dépenses"
         subtitle="Gérez vos dépenses directes."
-        primaryAction={{ label: '+ Nouvelle dépense', to: '/achats/depenses/nouvelle' }}
+        primaryAction={{ label: 'Nouvelle dépense', to: '/achats/depenses/nouvelle' }}
         secondaryAction={{ label: 'Exporter', onClick: handleExport }}
       />
 
@@ -187,29 +187,26 @@ export default function DepensesListPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>N°</th>
+                <th className="w-20">N°</th>
                 <th>Fournisseur</th>
-                <th>Catégorie</th>
-                <th className="text-right">Montant</th>
-                <th>Date</th>
-                <th>Échéance</th>
-                <th>Statut</th>
-                <th className="text-right">Acompte</th>
-                <th className="text-right">Reste</th>
-                <th>PJ</th>
-                <th className="text-right w-10">Actions</th>
+                <th className="w-24">Catégorie</th>
+                <th className="text-right w-28">Montant</th>
+                <th className="w-24">Échéance</th>
+                <th className="w-24">Statut</th>
+                <th className="text-right w-28">Reste</th>
+                <th className="w-10">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={11} className="text-center py-12 text-slate-400">
+                  <td colSpan={8} className="text-center py-12 text-slate-400">
                     Chargement...
                   </td>
                 </tr>
               ) : paginatedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={11}>
+                  <td colSpan={8}>
                     <EmptyState
                       title="Aucune dépense"
                       text="Commencez par créer une nouvelle dépense."
@@ -231,14 +228,15 @@ export default function DepensesListPage() {
                   return (
                     <tr key={item.id} className={echeanceAtteinte ? 'urgent' : ''}>
                       <td className="font-mono text-xs text-[#2563EB] link-cell">
-                        {item.numero || '—'}
+                        {item.numero || <span className="text-[#CBD5E1]">—</span>}
                       </td>
-                      <td className="font-semibold text-[#111827]">{item.fournisseur}</td>
+                      <td className="font-medium text-sm text-[#111827]">{item.fournisseur}</td>
                       <td className="text-xs text-[#64748B]">
-                        {item.categorie ? categorieLabels[item.categorie] || item.categorie : '—'}
+                        {item.categorie ? categorieLabels[item.categorie] || item.categorie : <span className="text-[#CBD5E1]">—</span>}
                       </td>
-                      <td className="text-right amount">{formatFCFA(item.montant)}</td>
-                      <td className="text-[#111827]">{formatDate(item.date_depense)}</td>
+                      <td className="text-right font-semibold font-mono text-sm">
+                        {formatFCFA(item.montant)}
+                      </td>
                       <td>
                         {item.date_echeance ? (
                           <span
@@ -249,35 +247,18 @@ export default function DepensesListPage() {
                             {formatDate(item.date_echeance)}
                           </span>
                         ) : (
-                          '—'
+                          <span className="text-[#CBD5E1]">—</span>
                         )}
                       </td>
                       <td>
                         <StatusBadge statut={item.statut} type="fournisseur" />
                       </td>
-                      <td className="text-right amount text-[#64748B]">
-                        {item.montant_acompte ? formatFCFA(item.montant_acompte) : '—'}
-                      </td>
                       <td
-                        className={`text-right amount font-bold ${
+                        className={`text-right font-semibold ${
                           reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
                         }`}
                       >
                         {formatFCFA(reste)}
-                      </td>
-                      <td>
-                        {item.pj_filename ? (
-                          <a
-                            href={item.pj_path || ''}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[#2563EB] hover:underline text-xs flex items-center gap-1"
-                          >
-                            <FileText className="w-3 h-3" /> {item.pj_filename}
-                          </a>
-                        ) : (
-                          '—'
-                        )}
                       </td>
                       <td>
                         <ActionMenu

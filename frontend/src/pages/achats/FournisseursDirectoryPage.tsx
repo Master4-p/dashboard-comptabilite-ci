@@ -116,7 +116,7 @@ export default function FournisseursDirectoryPage() {
   }, [addToast]);
 
   const handleCreateFournisseur = useCallback(() => {
-    alert('Fonctionnalité à venir : créer un nouveau fournisseur.');
+    addToast('info', 'Fonctionnalité à venir');
   }, []);
 
   const handleDeleteFournisseur = useCallback(
@@ -138,7 +138,7 @@ export default function FournisseursDirectoryPage() {
         title="Fournisseurs"
         subtitle="Gérez votre annuaire fournisseurs et leurs dettes."
         primaryAction={{
-          label: '+ Nouveau fournisseur',
+          label: 'Nouveau fournisseur',
           onClick: handleCreateFournisseur,
         }}
         secondaryAction={{ label: 'Exporter', onClick: handleExport }}
@@ -231,7 +231,7 @@ export default function FournisseursDirectoryPage() {
                   >
                     <td className="font-semibold text-[#111827]">{f.nom}</td>
                     <td className="text-xs text-[#64748B]">
-                      {f.categorie ? categorieLabels[f.categorie] || f.categorie : '—'}
+                      {f.categorie ? categorieLabels[f.categorie] || f.categorie : <span className="text-[#CBD5E1]">—</span>}
                     </td>
                     <td className="text-right">{f.depenses}</td>
                     <td className="text-right amount">{formatFCFA(f.total)}</td>

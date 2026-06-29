@@ -254,7 +254,7 @@ export default function ClientsDirectoryPage() {
         title="Clients"
         subtitle="Gérez votre portefeuille clients et leurs encours."
         primaryAction={{
-          label: '+ Nouveau client',
+          label: 'Nouveau client',
           onClick: handleOpenCreate,
         }}
         secondaryAction={{ label: 'Exporter', onClick: exportCustomers }}
@@ -363,14 +363,14 @@ export default function ClientsDirectoryPage() {
                     <td className="font-semibold text-[#111827]">
                       {customer.name}
                     </td>
-                    <td>{customer.contact_name || '—'}</td>
+                    <td>{customer.contact_name || <span className="text-[#CBD5E1]">—</span>}</td>
                     <td>
                       <div className="text-sm">
                         {customer.phone && <div>{customer.phone}</div>}
                         {customer.email && (
                           <div className="text-[#94A3B8]">{customer.email}</div>
                         )}
-                        {!customer.phone && !customer.email && '—'}
+                        {!customer.phone && !customer.email && <span className="text-[#CBD5E1]">—</span>}
                       </div>
                     </td>
                     <td className="text-right">

@@ -48,7 +48,7 @@ export default function DecaissementsPage() {
   }, [filteredItems, currentPage]);
 
   const handleCreateDecaissement = useCallback(() => {
-    alert('Fonctionnalité à venir : enregistrer un décaissement.');
+    addToast('info', 'Fonctionnalité à venir');
   }, []);
 
   return (
@@ -62,7 +62,7 @@ export default function DecaissementsPage() {
         title="Décaissements"
         subtitle="Historique des paiements émis."
         primaryAction={{
-          label: '+ Enregistrer un décaissement',
+          label: 'Enregistrer un décaissement',
           onClick: handleCreateDecaissement,
         }}
       />
@@ -116,7 +116,7 @@ export default function DecaissementsPage() {
                     >
                       <td className="text-[#111827]">{formatDate(item.date_depense)}</td>
                       <td className="font-mono text-xs text-[#2563EB]">
-                        {item.numero || '—'}
+                        {item.numero || <span className="text-[#CBD5E1]">—</span>}
                       </td>
                       <td className="font-semibold text-[#111827]">{item.fournisseur}</td>
                       <td className="text-right amount">{formatFCFA(item.montant)}</td>
@@ -131,7 +131,7 @@ export default function DecaissementsPage() {
                         {formatFCFA(reste)}
                       </td>
                       <td className="text-xs text-[#64748B]">
-                        {item.categorie || '—'}
+                        {item.categorie || <span className="text-[#CBD5E1]">—</span>}
                       </td>
                       <td>
                         <StatusBadge statut={item.statut} type="fournisseur" />

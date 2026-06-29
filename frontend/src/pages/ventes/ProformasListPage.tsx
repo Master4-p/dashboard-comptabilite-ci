@@ -146,7 +146,7 @@ export default function ProformasListPage() {
         ]}
         title="Proformas"
         subtitle="Gérez vos proformas et leur conversion."
-        primaryAction={{ label: '+ Nouvelle proforma', to: '/ventes/proformas/nouvelle' }}
+        primaryAction={{ label: 'Nouvelle proforma', to: '/ventes/proformas/nouvelle' }}
         secondaryAction={{ label: 'Exporter', onClick: exportClients }}
       />
 
@@ -243,14 +243,14 @@ export default function ProformasListPage() {
                         )}
                       </td>
                       <td><StatusBadge statut={item.statut} type="client" /></td>
-                      <td className="text-right amount text-[#64748B]">{item.montant_acompte ? formatFCFA(item.montant_acompte) : '—'}</td>
+                      <td className="text-right amount text-[#64748B]">{item.montant_acompte ? formatFCFA(item.montant_acompte) : <span className="text-[#CBD5E1]">—</span>}</td>
                       <td className={`text-right amount font-bold ${reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>{formatFCFA(reste)}</td>
                       <td>
                         {item.pj_filename ? (
                           <a href={item.pj_path || ''} target="_blank" rel="noreferrer" className="text-[#2563EB] hover:underline text-xs flex items-center gap-1">
                             <FileText className="w-3 h-3" /> {item.pj_filename}
                           </a>
-                        ) : '—'}
+                        ) : <span className="text-[#CBD5E1]">—</span>}
                       </td>
                       <td onClick={e => e.stopPropagation()}>
                         <ActionMenu

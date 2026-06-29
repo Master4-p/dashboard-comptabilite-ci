@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { MoreHorizontal, Eye, Pencil, Download, CreditCard, CheckCircle, Send, Copy, Trash2 } from 'lucide-react';
 
 interface Action {
@@ -14,27 +14,48 @@ interface ActionMenuProps {
 
 export default function ActionMenu({ actions }: ActionMenuProps) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (btnRef.current && !btnRef.current.contains(target)) {
+        const menu = document.querySelector('.action-menu-dropdown');
+        if (!menu || !menu.contains(target)) {
+          setOpen(false);
+        }
+      }
     }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
+    if (open) {
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
+    }
+  }, [open]);
+
+  const handleToggle = useCallback(() => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 4, left: rect.left - 200 + rect.width });
+    }
+    setOpen((prev) => !prev);
+  }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <>
       <button
-        onClick={() => setOpen(!open)}
+        ref={btnRef}
+        onClick={handleToggle}
         className="overflow-menu-btn btn-icon"
         title="Actions"
       >
         <MoreHorizontal className="w-4 h-4 text-[#64748B]" />
       </button>
       {open && (
-        <div className="dropdown-menu absolute right-0 top-full mt-1 z-50 w-56">
+        <div
+          className="action-menu-dropdown dropdown-menu fixed z-[9999] w-56"
+          style={{ top: pos.top, left: pos.left }}
+        >
           {actions.map((action, i) => (
             <button
               key={i}
@@ -47,7 +68,7 @@ export default function ActionMenu({ actions }: ActionMenuProps) {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 

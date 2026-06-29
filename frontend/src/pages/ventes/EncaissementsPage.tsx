@@ -194,7 +194,7 @@ export default function EncaissementsPage() {
         ]}
         title="Encaissements"
         subtitle="Historique des paiements reçus."
-        primaryAction={{ label: '+ Enregistrer un paiement', onClick: () => setShowForm(true) }}
+        primaryAction={{ label: 'Enregistrer un paiement', onClick: () => setShowForm(true) }}
       />
 
       {/* Payment Form */}
@@ -400,12 +400,12 @@ export default function EncaissementsPage() {
                   return (
                     <tr key={p.id}>
                       <td>{formatDate(p.payment_date)}</td>
-                      <td className="font-mono text-xs text-[#64748B]">{p.reference || '—'}</td>
-                      <td className="font-mono text-xs text-[#2563EB] link-cell">{invoice?.numero || p.invoice_numero || '—'}</td>
-                      <td className="font-semibold text-[#111827]">{customer?.name || p.customer_name || '—'}</td>
+                      <td className="font-mono text-xs text-[#64748B]">{p.reference || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="font-mono text-xs text-[#2563EB] link-cell">{invoice?.numero || p.invoice_numero || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="font-semibold text-[#111827]">{customer?.name || p.customer_name || <span className="text-[#CBD5E1]">—</span>}</td>
                       <td><span className="badge-gray">{p.payment_method}</span></td>
                       <td className="text-right amount text-[#059669]">{formatFCFA(p.amount)}</td>
-                      <td className="text-xs text-[#64748B] max-w-[200px] truncate">{p.notes || '—'}</td>
+                      <td className="text-xs text-[#64748B] max-w-[200px] truncate">{p.notes || <span className="text-[#CBD5E1]">—</span>}</td>
                       <td>
                         <button
                           onClick={() => handleDelete(p.id)}
