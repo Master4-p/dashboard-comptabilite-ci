@@ -67,117 +67,116 @@ export default function DecaissementsPage() {
         }}
       />
 
-      {/* Table */}
-      <div className="card p-0 overflow-hidden">
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>N°</th>
-                <th>Fournisseur</th>
-                <th className="text-right">Montant total</th>
-                <th className="text-right">Montant payé</th>
-                <th className="text-right">Reste</th>
-                <th>Catégorie</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400">
-                    Chargement...
-                  </td>
-                </tr>
-              ) : paginatedItems.length === 0 ? (
-                <tr>
-                  <td colSpan={8}>
-                    <EmptyState
-                      title="Aucun décaissement enregistré"
-                      text="Les paiements effectués apparaîtront ici."
-                      primaryAction={{
-                        label: 'Enregistrer un décaissement',
-                        onClick: handleCreateDecaissement,
-                      }}
-                    />
-                  </td>
-                </tr>
-              ) : (
-                paginatedItems.map((item) => {
-                  const montantPaye = item.montant_acompte;
-                  const reste = item.montant - item.montant_acompte;
-                  return (
-                    <motion.tr
-                      key={item.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <td className="text-[#111827]">{formatDate(item.date_depense)}</td>
-                      <td className="font-mono text-xs text-[#2563EB]">
-                        {item.numero || <span className="text-[#CBD5E1]">—</span>}
-                      </td>
-                      <td className="font-semibold text-[#111827]">{item.fournisseur}</td>
-                      <td className="text-right amount">{formatFCFA(item.montant)}</td>
-                      <td className="text-right amount text-[#059669]">
-                        {formatFCFA(montantPaye)}
-                      </td>
-                      <td
-                        className={`text-right amount font-bold ${
-                          reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
-                        }`}
-                      >
-                        {formatFCFA(reste)}
-                      </td>
-                      <td className="text-xs text-[#64748B]">
-                        {item.categorie || <span className="text-[#CBD5E1]">—</span>}
-                      </td>
-                      <td>
-                        <StatusBadge statut={item.statut} type="fournisseur" />
-                      </td>
-                    </motion.tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+      {paginatedItems.length === 0 && !loading ? (
+        <div className="card p-8">
+          <EmptyState
+            title="Aucun décaissement enregistré"
+            text="Les paiements effectués apparaîtront ici."
+            primaryAction={{
+              label: 'Enregistrer un décaissement',
+              onClick: handleCreateDecaissement,
+            }}
+          />
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0]">
-            <div className="text-sm text-[#64748B]">
-              {filteredItems.length} résultat{filteredItems.length > 1 ? 's' : ''}
-            </div>
-            <div className="pagination">
-              <button
-                className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+      ) : (
+        <div className="card p-0 overflow-hidden">
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th className="w-28">Date</th>
+                  <th className="w-24">N°</th>
+                  <th className="w-48">Fournisseur</th>
+                  <th className="w-28 text-right">Montant total</th>
+                  <th className="w-28 text-right">Montant payé</th>
+                  <th className="w-28 text-right">Reste</th>
+                  <th className="w-32">Catégorie</th>
+                  <th className="w-28">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12 text-slate-400">
+                      Chargement...
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedItems.map((item) => {
+                    const montantPaye = item.montant_acompte;
+                    const reste = item.montant - item.montant_acompte;
+                    return (
+                      <motion.tr
+                        key={item.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <td className="text-[#111827]">{formatDate(item.date_depense)}</td>
+                        <td className="font-mono text-xs text-[#2563EB]">
+                          {item.numero || <span className="text-[#CBD5E1]">—</span>}
+                        </td>
+                        <td className="font-semibold text-[#111827]">{item.fournisseur}</td>
+                        <td className="text-right amount">{formatFCFA(item.montant)}</td>
+                        <td className="text-right amount text-[#059669]">
+                          {formatFCFA(montantPaye)}
+                        </td>
+                        <td
+                          className={`text-right amount font-bold ${
+                            reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
+                          }`}
+                        >
+                          {formatFCFA(reste)}
+                        </td>
+                        <td className="text-xs text-[#64748B]">
+                          {item.categorie || <span className="text-[#CBD5E1]">—</span>}
+                        </td>
+                        <td>
+                          <StatusBadge statut={item.statut} type="fournisseur" />
+                        </td>
+                      </motion.tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0]">
+              <div className="text-sm text-[#64748B]">
+                {filteredItems.length} résultat{filteredItems.length > 1 ? 's' : ''}
+              </div>
+              <div className="pagination">
+                <button
+                  className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

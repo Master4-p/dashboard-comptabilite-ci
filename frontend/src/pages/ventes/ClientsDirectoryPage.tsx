@@ -324,16 +324,16 @@ export default function ClientsDirectoryPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Contact</th>
-                <th>Téléphone / Email</th>
-                <th className="text-right">Factures</th>
-                <th className="text-right">Total facturé</th>
-                <th className="text-right">Payé</th>
-                <th className="text-right">Encours</th>
-                <th>Dernière activité</th>
-                <th>Statut</th>
-                <th className="text-right w-10">Actions</th>
+                <th className="w-32">Nom</th>
+                <th className="w-32">Contact</th>
+                <th className="w-40">Téléphone / Email</th>
+                <th className="w-20 text-right">Factures</th>
+                <th className="w-28 text-right">Total facturé</th>
+                <th className="w-28 text-right">Payé</th>
+                <th className="w-28 text-right">Encours</th>
+                <th className="w-28">Dernière activité</th>
+                <th className="w-24">Statut</th>
+                <th className="w-12 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>

@@ -366,34 +366,34 @@ export default function EncaissementsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="card p-0 overflow-hidden">
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Référence</th>
-                <th>Facture</th>
-                <th>Client</th>
-                <th>Méthode</th>
-                <th className="text-right">Montant</th>
-                <th>Notes</th>
-                <th className="text-right w-10">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={8} className="text-center py-12 text-slate-400">Chargement...</td></tr>
-              ) : paginatedItems.length === 0 ? (
-                <tr><td colSpan={8}>
-                  <EmptyState
-                    title="Aucun encaissement enregistré."
-                    text="Les paiements reçus apparaîtront ici."
-                    icon={<CreditCard className="w-8 h-8" />}
-                  />
-                </td></tr>
-              ) : (
+      {paginatedItems.length === 0 && !loading ? (
+        <div className="card p-8">
+          <EmptyState
+            title="Aucun encaissement enregistré"
+            text="Les paiements reçus apparaîtront ici."
+            icon={<CreditCard className="w-8 h-8" />}
+          />
+        </div>
+      ) : (
+        <div className="card p-0 overflow-hidden">
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th className="w-24">Date</th>
+                  <th className="w-24">Référence</th>
+                  <th className="w-24">Facture</th>
+                  <th className="w-40">Client</th>
+                  <th className="w-24">Méthode</th>
+                  <th className="w-28 text-right">Montant</th>
+                  <th className="w-32">Notes</th>
+                  <th className="w-12 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={8} className="text-center py-12 text-slate-400">Chargement...</td></tr>
+                ) : (
                 paginatedItems.map(p => {
                   const customer = p.customer_id ? customerMap.get(p.customer_id) : null;
                   const invoice = p.invoice_id ? invoiceMap.get(p.invoice_id) : null;
@@ -456,7 +456,8 @@ export default function EncaissementsPage() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

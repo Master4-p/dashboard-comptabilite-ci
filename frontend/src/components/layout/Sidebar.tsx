@@ -17,7 +17,7 @@ const navItems = [
 
 function SidebarItem({ to, icon: Icon, label, collapsed, active }: { to: string; icon: any; label: string; collapsed: boolean; active: boolean }) {
   return (
-    <Link to={to} className={`sidebar-nav-item text-sm h-11 py-2.5 ${active ? 'active' : ''}`} title={collapsed ? label : undefined}>
+    <Link to={to} className={`sidebar-nav-item text-sm h-11 py-2.5 ${active ? 'active' : ''} ${collapsed ? 'justify-center' : ''}`} title={collapsed ? label : undefined}>
       <Icon className="sidebar-icon w-5 h-5" />
       {!collapsed && <span className="truncate">{label}</span>}
     </Link>

@@ -40,7 +40,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <main
-        className="pt-[76px] transition-all duration-250"
+        className="pt-[72px] transition-all duration-250"
         style={{ marginLeft: windowWidth >= 1024 ? sidebarWidth : 0 }}
       >
         <div className="page-content">

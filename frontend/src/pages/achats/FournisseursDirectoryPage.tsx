@@ -185,129 +185,128 @@ export default function FournisseursDirectoryPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="card p-0 overflow-hidden">
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Fournisseur</th>
-                <th>Catégorie</th>
-                <th className="text-right">Dépenses</th>
-                <th className="text-right">Total achats</th>
-                <th className="text-right">Payé</th>
-                <th className="text-right">Restant</th>
-                <th>Dernière activité</th>
-                <th className="text-right w-10">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400">
-                    Chargement...
-                  </td>
-                </tr>
-              ) : paginatedFournisseurs.length === 0 ? (
-                <tr>
-                  <td colSpan={8}>
-                    <EmptyState
-                      title="Aucun fournisseur"
-                      text="Aucune donnée fournisseur disponible."
-                      primaryAction={{
-                        label: 'Ajouter un fournisseur',
-                        onClick: handleCreateFournisseur,
-                      }}
-                    />
-                  </td>
-                </tr>
-              ) : (
-                paginatedFournisseurs.map((f) => (
-                  <motion.tr
-                    key={f.nom}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <td className="font-semibold text-[#111827]">{f.nom}</td>
-                    <td className="text-xs text-[#64748B]">
-                      {f.categorie ? categorieLabels[f.categorie] || f.categorie : <span className="text-[#CBD5E1]">—</span>}
-                    </td>
-                    <td className="text-right">{f.depenses}</td>
-                    <td className="text-right amount">{formatFCFA(f.total)}</td>
-                    <td className="text-right amount text-[#059669]">{formatFCFA(f.payé)}</td>
-                    <td
-                      className={`text-right amount font-bold ${
-                        f.restant > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
-                      }`}
-                    >
-                      {formatFCFA(f.restant)}
-                    </td>
-                    <td className="text-[#111827]">{formatDate(f.derniereDepense)}</td>
-                    <td>
-                      <ActionMenu
-                        actions={[
-                          { label: 'Voir la fiche', icon: Eye, onClick: () => {} },
-                          {
-                            label: 'Créer une dépense',
-                            icon: FileText,
-                            onClick: () => navigate('/achats/depenses/nouvelle'),
-                          },
-                          {
-                            label: 'Créer une facture',
-                            icon: FileText,
-                            onClick: () => navigate('/achats/depenses/nouvelle'),
-                          },
-                          {
-                            label: 'Supprimer',
-                            icon: Trash2,
-                            onClick: () => handleDeleteFournisseur(f.nom),
-                            danger: true,
-                          },
-                        ]}
-                      />
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {paginatedFournisseurs.length === 0 && !loading ? (
+        <div className="card p-8">
+          <EmptyState
+            title="Aucun fournisseur"
+            text="Aucune donnée fournisseur disponible."
+            primaryAction={{
+              label: 'Ajouter un fournisseur',
+              onClick: handleCreateFournisseur,
+            }}
+          />
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0]">
-            <div className="text-sm text-[#64748B]">
-              {filteredFournisseurs.length} résultat{filteredFournisseurs.length > 1 ? 's' : ''}
-            </div>
-            <div className="pagination">
-              <button
-                className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+      ) : (
+        <div className="card p-0 overflow-hidden">
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th className="w-48">Fournisseur</th>
+                  <th className="w-32">Catégorie</th>
+                  <th className="w-20 text-right">Dépenses</th>
+                  <th className="w-28 text-right">Total achats</th>
+                  <th className="w-28 text-right">Payé</th>
+                  <th className="w-28 text-right">Reste</th>
+                  <th className="w-28">Dernière activité</th>
+                  <th className="w-12">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12 text-slate-400">
+                      Chargement...
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedFournisseurs.map((f) => (
+                    <motion.tr
+                      key={f.nom}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <td className="font-semibold text-[#111827]">{f.nom}</td>
+                      <td className="text-xs text-[#64748B]">
+                        {f.categorie ? categorieLabels[f.categorie] || f.categorie : <span className="text-[#CBD5E1]">—</span>}
+                      </td>
+                      <td className="text-right">{f.depenses}</td>
+                      <td className="text-right amount">{formatFCFA(f.total)}</td>
+                      <td className="text-right amount text-[#059669]">{formatFCFA(f.payé)}</td>
+                      <td
+                        className={`text-right amount font-bold ${
+                          f.restant > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
+                        }`}
+                      >
+                        {formatFCFA(f.restant)}
+                      </td>
+                      <td className="text-[#111827]">{formatDate(f.derniereDepense)}</td>
+                      <td>
+                        <ActionMenu
+                          actions={[
+                            { label: 'Voir la fiche', icon: Eye, onClick: () => {} },
+                            {
+                              label: 'Créer une dépense',
+                              icon: FileText,
+                              onClick: () => navigate('/achats/depenses/nouvelle'),
+                            },
+                            {
+                              label: 'Créer une facture',
+                              icon: FileText,
+                              onClick: () => navigate('/achats/depenses/nouvelle'),
+                            },
+                            {
+                              label: 'Supprimer',
+                              icon: Trash2,
+                              onClick: () => handleDeleteFournisseur(f.nom),
+                              danger: true,
+                            },
+                          ]}
+                        />
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0]">
+              <div className="text-sm text-[#64748B]">
+                {filteredFournisseurs.length} résultat{filteredFournisseurs.length > 1 ? 's' : ''}
+              </div>
+              <div className="pagination">
+                <button
+                  className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
