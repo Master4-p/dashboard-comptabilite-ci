@@ -12,7 +12,7 @@ interface KpiCardProps {
 
 export default function KpiCard({ label, amount, comparison, comparisonPositive, icon, iconColor = '#173B6C', secondary }: KpiCardProps) {
   return (
-    <div className="card-hover p-5">
+    <div className="card-hover p-5" data-testid="kpi-card">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">{label}</div>

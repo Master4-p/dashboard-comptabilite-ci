@@ -2,10 +2,10 @@ import { Outlet, useLocation, Link } from 'react-router-dom';
 import useScrollToTop from '../../hooks/useScrollToTop';
 
 const tabs = [
-  { to: '/achats/depenses', label: 'Dépenses' },
-  { to: '/achats/factures-fournisseurs', label: 'Factures fournisseurs' },
-  { to: '/achats/fournisseurs', label: 'Fournisseurs' },
-  { to: '/achats/decaissements', label: 'Décaissements' },
+  { to: '/achats/depenses', label: 'Dépenses', slug: 'depenses' },
+  { to: '/achats/factures-fournisseurs', label: 'Factures fournisseurs', slug: 'factures-fournisseurs' },
+  { to: '/achats/fournisseurs', label: 'Fournisseurs', slug: 'fournisseurs' },
+  { to: '/achats/decaissements', label: 'Décaissements', slug: 'decaissements' },
 ];
 
 export default function AchatsLayout() {
@@ -27,7 +27,8 @@ export default function AchatsLayout() {
             <Link
               key={tab.to}
               to={tab.to}
-              data-testid={`achats-tab-${tab.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+              data-testid={`achats-tab-${tab.slug}`}
+              aria-selected={isActive(tab.to)}
               className={`tab ${isActive(tab.to) ? 'active' : ''}`}
             >
               {tab.label}
