@@ -319,33 +319,31 @@ export default function ClientsDirectoryPage() {
       </div>
 
       {/* Table */}
-      <div className="card p-0 overflow-hidden">
+      <div className="card p-0" data-testid="clients-table-card">
         <div className="data-table-container">
-          <table className="data-table">
+          <table className="data-table" data-testid="clients-table">
             <thead>
               <tr>
-                <th className="w-32">Nom</th>
-                <th className="w-32">Contact</th>
-                <th className="w-40">Téléphone / Email</th>
-                <th className="w-20 text-right">Factures</th>
-                <th className="w-28 text-right">Total facturé</th>
-                <th className="w-28 text-right">Payé</th>
-                <th className="w-28 text-right">Encours</th>
-                <th className="w-28">Dernière activité</th>
-                <th className="w-24">Statut</th>
-                <th className="w-12 text-right">Actions</th>
+                <th>Nom</th>
+                <th className="nowrap">Contact</th>
+                <th className="nowrap text-right">Factures</th>
+                <th className="nowrap text-right">Total facturé</th>
+                <th className="nowrap text-right">Encours</th>
+                <th className="nowrap">Dernière activité</th>
+                <th className="nowrap">Statut</th>
+                <th className="nowrap" style={{ width: 44 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-12 text-slate-400">
+                  <td colSpan={8} className="text-center py-12 text-slate-400">
                     Chargement...
                   </td>
                 </tr>
               ) : paginatedCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={10}>
+                  <td colSpan={8}>
                     <EmptyState
                       title="Aucun client"
                       text="Ajoutez votre premier client."
@@ -359,31 +357,28 @@ export default function ClientsDirectoryPage() {
                 </tr>
               ) : (
                 paginatedCustomers.map((customer) => (
-                  <tr key={customer.id}>
-                    <td className="font-semibold text-[#111827]">
+                  <tr key={customer.id} data-testid={`client-row-${customer.id}`}>
+                    <td className="font-semibold text-[#111827] truncate-cell" title={customer.name}>
                       {customer.name}
                     </td>
-                    <td>{customer.contact_name || <span className="text-[#CBD5E1]">—</span>}</td>
-                    <td>
+                    <td className="nowrap">
                       <div className="text-sm">
-                        {customer.phone && <div>{customer.phone}</div>}
+                        {customer.contact_name && <div className="text-[#111827]">{customer.contact_name}</div>}
+                        {customer.phone && <div className="text-xs text-[#64748B]">{customer.phone}</div>}
                         {customer.email && (
-                          <div className="text-[#94A3B8]">{customer.email}</div>
+                          <div className="text-xs text-[#94A3B8]">{customer.email}</div>
                         )}
-                        {!customer.phone && !customer.email && <span className="text-[#CBD5E1]">—</span>}
+                        {!customer.contact_name && !customer.phone && !customer.email && <span className="text-[#CBD5E1]">—</span>}
                       </div>
                     </td>
-                    <td className="text-right">
+                    <td className="amount">
                       {customer.invoices_count}
                     </td>
-                    <td className="text-right amount">
+                    <td className="amount">
                       {formatFCFA(customer.invoices_total || 0)}
                     </td>
-                    <td className="text-right amount text-[#059669]">
-                      {formatFCFA(customer.invoices_paid || 0)}
-                    </td>
                     <td
-                      className={`text-right amount font-bold ${
+                      className={`amount font-bold ${
                         (customer.encours || 0) > 0
                           ? 'text-[#DC2626]'
                           : 'text-[#059669]'
@@ -391,8 +386,8 @@ export default function ClientsDirectoryPage() {
                     >
                       {formatFCFA(customer.encours || 0)}
                     </td>
-                    <td>{formatDate(customer.derniere_activite)}</td>
-                    <td>
+                    <td className="nowrap date-cell">{formatDate(customer.derniere_activite)}</td>
+                    <td className="badge-cell">
                       <span
                         className={`badge ${
                           customer.is_active === 1
@@ -403,7 +398,7 @@ export default function ClientsDirectoryPage() {
                         {customer.is_active === 1 ? 'Actif' : 'Inactif'}
                       </span>
                     </td>
-                    <td>
+                    <td className="actions">
                       <ActionMenu
                         actions={[
                           {

@@ -11,15 +11,20 @@ interface PageHeaderProps {
 }
 
 export default function PageHeader({ breadcrumb, title, subtitle, primaryAction, secondaryAction }: PageHeaderProps) {
+  // Ensure the primary action label never starts with a stray "+ " (avoids the famous double-plus bug)
+  const cleanPrimaryLabel = primaryAction?.label.replace(/^\s*\+\s*/, '').trim();
+  const cleanSecondaryLabel = secondaryAction?.label.replace(/^\s*\+\s*/, '').trim();
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="mb-6"
+      transition={{ duration: 0.3 }}
+      className="mb-5"
+      data-testid="page-header"
     >
       {/* Breadcrumb */}
-      <nav className="text-xs text-[#94A3B8] mb-2 flex items-center gap-1">
+      <nav className="text-xs text-[#94A3B8] mb-2 flex items-center gap-1 flex-wrap" data-testid="page-breadcrumb">
         {breadcrumb.map((crumb, i) => (
           <span key={i} className="flex items-center gap-1">
             {i > 0 && <span className="text-[#CBD5E1]">/</span>}
@@ -33,37 +38,40 @@ export default function PageHeader({ breadcrumb, title, subtitle, primaryAction,
       </nav>
 
       {/* Title row */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#111827]">{title}</h1>
-          <p className="text-sm text-[#64748B] mt-1">{subtitle}</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl md:text-2xl font-bold text-[#111827] leading-tight" data-testid="page-title">{title}</h1>
+          <p className="text-sm text-[#64748B] mt-1" data-testid="page-subtitle">{subtitle}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {secondaryAction && (
             <button
               onClick={secondaryAction.onClick}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#E2E8F0] bg-white text-sm font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+              className="btn btn-secondary btn-sm"
+              data-testid="page-header-secondary-action"
             >
               {secondaryAction.icon || <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline">{secondaryAction.label}</span>
+              <span className="hidden sm:inline">{cleanSecondaryLabel}</span>
             </button>
           )}
           {primaryAction && (
             primaryAction.to ? (
               <Link
                 to={primaryAction.to}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#173B6C] text-white text-sm font-medium hover:bg-[#1e4a8a] transition-colors shadow-sm"
+                className="btn btn-primary btn-sm"
+                data-testid="page-header-primary-action"
               >
                 {primaryAction.icon || <Plus className="w-4 h-4" />}
-                {primaryAction.label}
+                {cleanPrimaryLabel}
               </Link>
             ) : (
               <button
                 onClick={primaryAction.onClick}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#173B6C] text-white text-sm font-medium hover:bg-[#1e4a8a] transition-colors shadow-sm"
+                className="btn btn-primary btn-sm"
+                data-testid="page-header-primary-action"
               >
                 {primaryAction.icon || <Plus className="w-4 h-4" />}
-                {primaryAction.label}
+                {cleanPrimaryLabel}
               </button>
             )
           )}

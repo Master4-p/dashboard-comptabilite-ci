@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Save, XCircle } from 'lucide-react';
+import { ArrowLeft, Save, XCircle, CreditCard, FileText, User } from 'lucide-react';
 import { fournisseursApi, type FournisseurItem } from '../../lib/api';
 import { todayInputValue } from '../../lib/utils';
 import PageHeader from '../../components/layout/PageHeader';
@@ -9,7 +9,7 @@ import { useToast } from '../../context/ToastContext';
 import useScrollToTop from '../../hooks/useScrollToTop';
 
 const CATEGORIES = [
-  { value: '', label: '-- Choisir --' },
+  { value: '', label: '— Choisir une catégorie —' },
   { value: 'matiere_premiere', label: 'Matière première' },
   { value: 'fourniture', label: 'Fourniture bureau' },
   { value: 'transport', label: 'Transport' },
@@ -81,7 +81,19 @@ export default function NouvelleDepensePage() {
   const isAcompteVisible = formData.statut === 'acompte_verse';
 
   return (
-    <div>
+    <div className="max-w-[960px] mx-auto" data-testid="nouvelle-depense-page">
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={handleCancel}
+          className="btn-icon hover:bg-slate-100 text-slate-500"
+          title="Retour aux dépenses"
+          data-testid="depense-back-btn"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <span className="text-xs text-[#94A3B8]">Retour à la liste des dépenses</span>
+      </div>
+
       <PageHeader
         breadcrumb={[
           { label: 'Relais IT' },
@@ -89,31 +101,37 @@ export default function NouvelleDepensePage() {
           { label: 'Nouvelle dépense' },
         ]}
         title="Nouvelle dépense"
-        subtitle="Créez une dépense ou une facture fournisseur."
+        subtitle="Créez une dépense directe ou une facture fournisseur."
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
+      <motion.form
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="glass-panel"
+        transition={{ duration: 0.25 }}
+        onSubmit={handleSubmit}
+        className="card"
+        data-testid="depense-form"
       >
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Type */}
+        {/* Section 1 — Document */}
+        <div className="form-section">
+          <div className="form-section-title">
+            <FileText className="w-4 h-4 text-[#173B6C]" />
+            Document
+          </div>
+          <div className="form-section-subtitle">Type et référence de la dépense</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Type</label>
+              <label className="form-label">Type *</label>
               <select
-                className="form-input"
+                className="form-select"
                 value={formData.type}
                 onChange={(e) => handleChange('type', e.target.value)}
+                data-testid="depense-type"
               >
                 <option value="facture_fournisseur">Facture fournisseur</option>
                 <option value="depense">Dépense directe</option>
               </select>
             </div>
-
-            {/* N° / Référence */}
             <div>
               <label className="form-label">N° / Référence</label>
               <input
@@ -121,28 +139,38 @@ export default function NouvelleDepensePage() {
                 placeholder="FV-2026-001"
                 value={formData.numero || ''}
                 onChange={(e) => handleChange('numero', e.target.value)}
+                data-testid="depense-numero"
               />
             </div>
+          </div>
+        </div>
 
-            {/* Fournisseur */}
+        {/* Section 2 — Fournisseur */}
+        <div className="form-section">
+          <div className="form-section-title">
+            <User className="w-4 h-4 text-[#173B6C]" />
+            Fournisseur
+          </div>
+          <div className="form-section-subtitle">Bénéficiaire de la dépense</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Fournisseur *</label>
+              <label className="form-label">Nom du fournisseur *</label>
               <input
                 className="form-input"
                 required
-                placeholder="Nom du fournisseur"
+                placeholder="Ex. Bureau Vallée"
                 value={formData.fournisseur}
                 onChange={(e) => handleChange('fournisseur', e.target.value)}
+                data-testid="depense-fournisseur"
               />
             </div>
-
-            {/* Catégorie */}
             <div>
               <label className="form-label">Catégorie</label>
               <select
-                className="form-input"
+                className="form-select"
                 value={formData.categorie || ''}
                 onChange={(e) => handleChange('categorie', e.target.value || null)}
+                data-testid="depense-categorie"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c.value} value={c.value}>
@@ -151,21 +179,29 @@ export default function NouvelleDepensePage() {
                 ))}
               </select>
             </div>
+          </div>
+        </div>
 
-            {/* Montant */}
+        {/* Section 3 — Montant & dates */}
+        <div className="form-section">
+          <div className="form-section-title">
+            <CreditCard className="w-4 h-4 text-[#173B6C]" />
+            Montant &amp; dates
+          </div>
+          <div className="form-section-subtitle">Détails financiers et échéances</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">Montant (FCFA) *</label>
               <input
-                className="form-input"
+                className="form-input text-right"
                 type="number"
                 required
                 min={0}
                 value={formData.montant}
                 onChange={(e) => handleChange('montant', Number(e.target.value))}
+                data-testid="depense-montant"
               />
             </div>
-
-            {/* Date de la dépense */}
             <div>
               <label className="form-label">Date de la dépense *</label>
               <input
@@ -174,10 +210,9 @@ export default function NouvelleDepensePage() {
                 required
                 value={formData.date_depense}
                 onChange={(e) => handleChange('date_depense', e.target.value)}
+                data-testid="depense-date"
               />
             </div>
-
-            {/* Date d'échéance */}
             <div>
               <label className="form-label">Date d'échéance</label>
               <input
@@ -185,29 +220,27 @@ export default function NouvelleDepensePage() {
                 type="date"
                 value={formData.date_echeance || ''}
                 onChange={(e) => handleChange('date_echeance', e.target.value || null)}
+                data-testid="depense-echeance"
               />
             </div>
-
-            {/* Statut */}
             <div>
               <label className="form-label">Statut</label>
               <select
-                className="form-input"
+                className="form-select"
                 value={formData.statut}
                 onChange={(e) => handleChange('statut', e.target.value)}
+                data-testid="depense-statut"
               >
                 <option value="impayee">Impayée</option>
                 <option value="acompte_verse">Acompte versé</option>
                 <option value="payee">Payée</option>
               </select>
             </div>
-
-            {/* Montant acompte */}
             {isAcompteVisible && (
-              <div>
+              <div className="md:col-span-2">
                 <label className="form-label">Montant acompte (FCFA)</label>
                 <input
-                  className="form-input"
+                  className="form-input text-right"
                   type="number"
                   min={0}
                   value={formData.montant_acompte || 0}
@@ -215,49 +248,45 @@ export default function NouvelleDepensePage() {
                 />
               </div>
             )}
-
-            {/* Notes */}
-            <div className="md:col-span-2 lg:col-span-3">
-              <label className="form-label">Notes</label>
-              <textarea
-                className="form-textarea"
-                rows={3}
-                placeholder="Détails de la dépense, mode de règlement..."
-                value={formData.notes}
-                onChange={(e) => handleChange('notes', e.target.value)}
-              />
-            </div>
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-[#E2E8F0]">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="btn-primary flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {submitting ? 'Enregistrement...' : 'Enregistrer'}
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="btn-secondary flex items-center gap-2"
-            >
-              <XCircle className="w-4 h-4" />
-              Annuler
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="btn-outline flex items-center gap-2 ml-auto"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Retour aux dépenses
-            </button>
-          </div>
-        </form>
-      </motion.div>
+        {/* Section 4 — Notes */}
+        <div className="form-section">
+          <div className="form-section-title">Notes complémentaires</div>
+          <div className="form-section-subtitle">Mode de règlement, commentaires…</div>
+          <textarea
+            className="form-textarea"
+            rows={3}
+            placeholder="Détails de la dépense, mode de règlement…"
+            value={formData.notes}
+            onChange={(e) => handleChange('notes', e.target.value)}
+            data-testid="depense-notes"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="form-section flex items-center gap-3 flex-wrap">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn btn-primary btn-sm"
+            data-testid="depense-submit-btn"
+          >
+            <Save className="w-4 h-4" />
+            {submitting ? 'Enregistrement…' : 'Enregistrer la dépense'}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="btn btn-secondary btn-sm"
+            data-testid="depense-cancel-btn"
+          >
+            <XCircle className="w-4 h-4" />
+            Annuler
+          </button>
+        </div>
+      </motion.form>
     </div>
   );
 }

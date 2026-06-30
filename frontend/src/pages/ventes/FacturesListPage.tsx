@@ -154,26 +154,23 @@ export default function FacturesListPage() {
           />
         </div>
       ) : (
-        <div className="card p-0 overflow-hidden">
+        <div className="card p-0" data-testid="factures-table-card">
           <div className="data-table-container">
-            <table className="data-table">
+            <table className="data-table" data-testid="factures-table">
               <thead>
                 <tr>
-                  <th className="w-24">N°</th>
-                  <th className="w-48">Client</th>
-                  <th className="w-28 text-right">Montant</th>
-                  <th className="w-28">Émission</th>
-                  <th className="w-28">Relance</th>
-                  <th className="w-24">Statut</th>
-                  <th className="w-24 text-right">Acompte</th>
-                  <th className="w-28 text-right">Reste</th>
-                  <th className="w-20">PJ</th>
-                  <th className="w-12">Actions</th>
+                  <th className="nowrap">N°</th>
+                  <th>Client</th>
+                  <th className="nowrap">Émission</th>
+                  <th className="nowrap text-right">Montant</th>
+                  <th className="nowrap text-right">Reste</th>
+                  <th className="nowrap">Statut</th>
+                  <th className="nowrap" style={{ width: 44 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={10} className="text-center py-12 text-slate-400">Chargement...</td></tr>
+                  <tr><td colSpan={7} className="text-center py-12 text-slate-400">Chargement...</td></tr>
                 ) : (
                   paginatedItems.map(item => {
                     const reste = item.montant - item.montant_acompte;
@@ -181,34 +178,27 @@ export default function FacturesListPage() {
                     const urgent = item.statut !== 'solde' && jours > 30;
                     const relanceAtteinte = item.date_relance && new Date(item.date_relance) <= new Date() && item.statut !== 'solde';
                     return (
-                      <tr key={item.id} className={`${urgent || relanceAtteinte ? 'urgent' : ''} cursor-pointer hover:bg-slate-50`} onClick={() => startEdit(item)}>
-                        <td className="font-mono text-xs text-[#2563EB] link-cell">{item.numero}</td>
-                        <td className="font-semibold text-[#111827]">{item.client}</td>
-                        <td className="text-right amount">{formatFCFA(item.montant)}</td>
-                        <td>
-                          <div className="text-[#111827]">{formatDate(item.date_emission)}</div>
-                          <div className="text-xs text-[#94A3B8]">{jours}j</div>
+                      <tr key={item.id} className={`${urgent || relanceAtteinte ? 'urgent' : ''} clickable`} onClick={() => startEdit(item)} data-testid={`facture-row-${item.id}`}>
+                        <td className="nowrap font-mono text-xs text-[#2563EB] link-cell">
+                          <span className="inline-flex items-center gap-1">
+                            {item.numero}
+                            {item.pj_filename && <FileText className="w-3 h-3 text-[#94A3B8]" />}
+                          </span>
                         </td>
-                        <td>
-                          {item.date_relance ? (
-                            <span className={`text-xs font-semibold ${relanceAtteinte ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
-                              {formatDate(item.date_relance)}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-[#CBD5E1]">—</span>
+                        <td className="font-semibold text-[#111827] truncate-cell" title={item.client}>{item.client}</td>
+                        <td className="nowrap date-cell">
+                          <div className="text-[#111827] text-sm">{formatDate(item.date_emission)}</div>
+                          <div className="text-xs text-[#94A3B8]">{jours}j {relanceAtteinte && <span className="text-[#DC2626]">• relance</span>}</div>
+                        </td>
+                        <td className="amount">{formatFCFA(item.montant)}</td>
+                        <td className={`amount font-bold ${reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
+                          {formatFCFA(reste)}
+                          {item.montant_acompte > 0 && reste > 0 && (
+                            <div className="text-[10px] font-normal text-[#94A3B8] mt-0.5">Acompte {formatFCFA(item.montant_acompte)}</div>
                           )}
                         </td>
-                        <td><StatusBadge statut={item.statut} type="client" /></td>
-                        <td className="text-right amount text-[#64748B]">{item.montant_acompte ? formatFCFA(item.montant_acompte) : <span className="text-[#CBD5E1]">—</span>}</td>
-                        <td className={`text-right amount font-bold ${reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>{formatFCFA(reste)}</td>
-                        <td>
-                          {item.pj_filename ? (
-                            <a href={item.pj_path || ''} target="_blank" rel="noreferrer" className="text-[#2563EB] hover:underline text-xs flex items-center gap-1">
-                              <FileText className="w-3 h-3" /> {item.pj_filename}
-                            </a>
-                          ) : <span className="text-[#CBD5E1]">—</span>}
-                        </td>
-                        <td onClick={e => e.stopPropagation()}>
+                        <td className="badge-cell"><StatusBadge statut={item.statut} type="client" /></td>
+                        <td className="actions" onClick={e => e.stopPropagation()}>
                           <ActionMenu
                             actions={[
                               { label: 'Voir', icon: Eye, onClick: () => handleView(item) },

@@ -79,19 +79,19 @@ export default function DecaissementsPage() {
           />
         </div>
       ) : (
-        <div className="card p-0 overflow-hidden">
+        <div className="card p-0" data-testid="decaissements-table-card">
           <div className="data-table-container">
-            <table className="data-table">
+            <table className="data-table" data-testid="decaissements-table">
               <thead>
                 <tr>
-                  <th className="w-28">Date</th>
-                  <th className="w-24">N°</th>
-                  <th className="w-48">Fournisseur</th>
-                  <th className="w-28 text-right">Montant total</th>
-                  <th className="w-28 text-right">Montant payé</th>
-                  <th className="w-28 text-right">Reste</th>
-                  <th className="w-32">Catégorie</th>
-                  <th className="w-28">Statut</th>
+                  <th className="nowrap">Date</th>
+                  <th className="nowrap">N°</th>
+                  <th>Fournisseur</th>
+                  <th className="nowrap text-right">Montant total</th>
+                  <th className="nowrap text-right">Montant payé</th>
+                  <th className="nowrap text-right">Reste</th>
+                  <th className="nowrap">Catégorie</th>
+                  <th className="nowrap">Statut</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,27 +111,28 @@ export default function DecaissementsPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.2 }}
+                        data-testid={`decaissement-row-${item.id}`}
                       >
-                        <td className="text-[#111827]">{formatDate(item.date_depense)}</td>
-                        <td className="font-mono text-xs text-[#2563EB]">
+                        <td className="nowrap date-cell text-[#111827]">{formatDate(item.date_depense)}</td>
+                        <td className="nowrap font-mono text-xs text-[#2563EB]">
                           {item.numero || <span className="text-[#CBD5E1]">—</span>}
                         </td>
-                        <td className="font-semibold text-[#111827]">{item.fournisseur}</td>
-                        <td className="text-right amount">{formatFCFA(item.montant)}</td>
-                        <td className="text-right amount text-[#059669]">
+                        <td className="font-semibold text-[#111827] truncate-cell" title={item.fournisseur}>{item.fournisseur}</td>
+                        <td className="amount">{formatFCFA(item.montant)}</td>
+                        <td className="amount text-[#059669]">
                           {formatFCFA(montantPaye)}
                         </td>
                         <td
-                          className={`text-right amount font-bold ${
+                          className={`amount font-bold ${
                             reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
                           }`}
                         >
                           {formatFCFA(reste)}
                         </td>
-                        <td className="text-xs text-[#64748B]">
+                        <td className="nowrap text-xs text-[#64748B]">
                           {item.categorie || <span className="text-[#CBD5E1]">—</span>}
                         </td>
-                        <td>
+                        <td className="badge-cell">
                           <StatusBadge statut={item.statut} type="fournisseur" />
                         </td>
                       </motion.tr>

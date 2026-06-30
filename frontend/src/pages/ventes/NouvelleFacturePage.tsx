@@ -305,7 +305,19 @@ export default function NouvelleFacturePage() {
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-6">
+    <div className="max-w-[1100px] mx-auto" data-testid="nouvelle-facture-page">
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={() => navigate('/ventes/factures')}
+          className="btn-icon hover:bg-slate-100 text-slate-500"
+          title="Retour aux factures"
+          data-testid="facture-back-btn"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <span className="text-xs text-[#94A3B8]">Retour à la liste des factures</span>
+      </div>
+
       <PageHeader
         breadcrumb={[
           { label: 'Relais IT' },
@@ -317,65 +329,62 @@ export default function NouvelleFacturePage() {
         subtitle={isEditing ? `Facture ${numero}` : 'Créez une facture client.'}
       />
 
-      {/* Invoice header info */}
-      <div className="card p-6 mb-6">
-        <div className="flex items-center gap-2 mb-6">
-          <button
-            onClick={() => navigate('/ventes/factures')}
-            className="btn-icon hover:bg-slate-50 text-slate-400 hover:text-slate-600"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h2 className="text-lg font-bold text-[#111827] flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#173B6C]" />
-            Informations facture
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label className="form-label">N° facture</label>
-            <div className="form-input bg-slate-50 font-mono text-[#2563EB] font-semibold flex items-center">
-              {numero}
+      {/* Document info section */}
+      <div className="card mb-5" data-testid="facture-info-section">
+        <div className="form-section">
+          <div className="form-section-title">
+            <FileText className="w-4 h-4 text-[#173B6C]" />
+            Informations de la facture
+          </div>
+          <div className="form-section-subtitle">Numéro, statut et dates clés</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <label className="form-label">N° facture</label>
+              <div className="form-input bg-slate-50 font-mono text-[#2563EB] font-semibold flex items-center">
+                {numero}
+              </div>
             </div>
-          </div>
-          <div>
-            <label className="form-label">Statut</label>
-            <div className="form-input bg-slate-50 flex items-center">
-              <span className="badge-amber">Brouillon</span>
+            <div>
+              <label className="form-label">Statut</label>
+              <div className="form-input bg-slate-50 flex items-center">
+                <span className="badge-amber">Brouillon</span>
+              </div>
             </div>
-          </div>
-          <div>
-            <label className="form-label">Date d'émission</label>
-            <input
-              type="date"
-              className="form-input"
-              value={dateEmission}
-              onChange={e => {
-                const val = e.target.value;
-                setDateEmission(val);
-                if (selectedCustomer && val && !isEditing) {
-                  const d = new Date(val);
-                  d.setDate(d.getDate() + selectedCustomer.default_payment_terms_days);
-                  setDateEcheance(d.toISOString().split('T')[0]);
-                }
-              }}
-            />
-          </div>
-          <div>
-            <label className="form-label">Date d'échéance</label>
-            <input
-              type="date"
-              className="form-input"
-              value={dateEcheance}
-              onChange={e => setDateEcheance(e.target.value)}
-            />
+            <div>
+              <label className="form-label">Date d'émission</label>
+              <input
+                type="date"
+                className="form-input"
+                value={dateEmission}
+                onChange={e => {
+                  const val = e.target.value;
+                  setDateEmission(val);
+                  if (selectedCustomer && val && !isEditing) {
+                    const d = new Date(val);
+                    d.setDate(d.getDate() + selectedCustomer.default_payment_terms_days);
+                    setDateEcheance(d.toISOString().split('T')[0]);
+                  }
+                }}
+                data-testid="facture-date-emission"
+              />
+            </div>
+            <div>
+              <label className="form-label">Date d'échéance</label>
+              <input
+                type="date"
+                className="form-input"
+                value={dateEcheance}
+                onChange={e => setDateEcheance(e.target.value)}
+                data-testid="facture-date-echeance"
+              />
+            </div>
           </div>
         </div>
 
         {/* Customer selection */}
-        <div className="mb-2 relative">
-          <label className="form-label">Client</label>
+        <div className="form-section">
+          <div className="form-section-title">Client</div>
+          <div className="form-section-subtitle">Sélectionnez le client destinataire</div>
           <div className="relative">
             <input
               className="form-input"
@@ -390,6 +399,7 @@ export default function NouvelleFacturePage() {
               onFocus={() => {
                 if (!selectedCustomer) setShowCustomerDropdown(true);
               }}
+              data-testid="facture-customer-search"
             />
             {selectedCustomer && (
               <button
@@ -398,6 +408,7 @@ export default function NouvelleFacturePage() {
                   setCustomerSearch('');
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500"
+                data-testid="facture-customer-clear"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -444,233 +455,247 @@ export default function NouvelleFacturePage() {
       </div>
 
       {/* Line items */}
-      <div className="card p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-[#111827]">Lignes de facture</h3>
-          <button onClick={addLine} className="btn-primary btn-sm">
-            <Plus className="w-4 h-4" />
-            Ajouter une ligne
-          </button>
-        </div>
+      <div className="card mb-5" data-testid="facture-lines-section">
+        <div className="form-section">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <div className="form-section-title">Lignes de facture</div>
+              <div className="form-section-subtitle">Détaillez les prestations ou produits facturés</div>
+            </div>
+            <button onClick={addLine} className="btn btn-primary btn-sm" data-testid="add-line-btn">
+              <Plus className="w-4 h-4" />
+              Ajouter une ligne
+            </button>
+          </div>
 
-        <div className="data-table-container overflow-x-auto">
-          <table className="data-table min-w-[900px]">
-            <thead>
-              <tr>
-                <th className="w-10">#</th>
-                <th>Description</th>
-                <th className="text-right w-24">Qté</th>
-                <th className="w-24">Unité</th>
-                <th className="text-right w-28">Prix U.</th>
-                <th className="text-right w-32">Remise</th>
-                <th className="text-right w-24">TVA</th>
-                <th className="text-right w-28">Total</th>
-                <th className="w-20"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {calculatedLines.map((line, index) => (
-                <tr key={index}>
-                  <td className="text-[#94A3B8] text-xs font-mono">{index + 1}</td>
-                  <td>
-                    <input
-                      className="form-input min-w-[180px]"
-                      placeholder="Description..."
-                      value={line.description}
-                      onChange={e => updateLine(index, { description: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-input text-right"
-                      min={0}
-                      step={0.01}
-                      value={line.quantity}
-                      onChange={e => updateLine(index, { quantity: Number(e.target.value) })}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      className="form-input"
-                      value={line.unit}
-                      onChange={e => updateLine(index, { unit: e.target.value })}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-input text-right"
-                      min={0}
-                      step={0.01}
-                      value={line.unit_price}
-                      onChange={e => updateLine(index, { unit_price: Number(e.target.value) })}
-                    />
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-1">
-                      <select
-                        className="form-select w-20"
-                        value={line.discount_type}
-                        onChange={e => updateLine(index, { discount_type: e.target.value as 'none' | 'percent' | 'fixed' })}
-                      >
-                        <option value="none">—</option>
-                        <option value="percent">%</option>
-                        <option value="fixed">FCFA</option>
-                      </select>
-                      {line.discount_type !== 'none' && (
-                        <input
-                          type="number"
-                          className="form-input text-right w-20"
-                          min={0}
-                          step={0.01}
-                          value={line.discount_value}
-                          onChange={e => updateLine(index, { discount_value: Number(e.target.value) })}
-                        />
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-1">
+          <div className="data-table-container mt-3" style={{ borderRadius: 10 }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th className="nowrap" style={{ width: 36 }}>#</th>
+                  <th>Description</th>
+                  <th className="nowrap text-right" style={{ width: 90 }}>Qté</th>
+                  <th className="nowrap" style={{ width: 80 }}>Unité</th>
+                  <th className="nowrap text-right" style={{ width: 120 }}>Prix U.</th>
+                  <th className="nowrap text-right" style={{ width: 150 }}>Remise</th>
+                  <th className="nowrap text-right" style={{ width: 90 }}>TVA %</th>
+                  <th className="nowrap text-right" style={{ width: 130 }}>Total</th>
+                  <th style={{ width: 70 }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {calculatedLines.map((line, index) => (
+                  <tr key={index} data-testid={`facture-line-${index}`}>
+                    <td className="text-[#94A3B8] text-xs font-mono nowrap">{index + 1}</td>
+                    <td>
+                      <input
+                        className="form-input"
+                        placeholder="Description..."
+                        value={line.description}
+                        onChange={e => updateLine(index, { description: e.target.value })}
+                      />
+                    </td>
+                    <td>
                       <input
                         type="number"
-                        className="form-input text-right w-16"
+                        className="form-input text-right"
+                        min={0}
+                        step={0.01}
+                        value={line.quantity}
+                        onChange={e => updateLine(index, { quantity: Number(e.target.value) })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="form-input"
+                        value={line.unit}
+                        onChange={e => updateLine(index, { unit: e.target.value })}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-input text-right"
+                        min={0}
+                        step={0.01}
+                        value={line.unit_price}
+                        onChange={e => updateLine(index, { unit_price: Number(e.target.value) })}
+                      />
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1">
+                        <select
+                          className="form-select"
+                          style={{ width: 64 }}
+                          value={line.discount_type}
+                          onChange={e => updateLine(index, { discount_type: e.target.value as 'none' | 'percent' | 'fixed' })}
+                        >
+                          <option value="none">—</option>
+                          <option value="percent">%</option>
+                          <option value="fixed">FCFA</option>
+                        </select>
+                        {line.discount_type !== 'none' && (
+                          <input
+                            type="number"
+                            className="form-input text-right"
+                            style={{ width: 70 }}
+                            min={0}
+                            step={0.01}
+                            value={line.discount_value}
+                            onChange={e => updateLine(index, { discount_value: Number(e.target.value) })}
+                          />
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-input text-right"
                         min={0}
                         step={0.01}
                         value={line.tax_rate}
                         onChange={e => updateLine(index, { tax_rate: Number(e.target.value) })}
                       />
-                      <span className="text-xs text-[#94A3B8]">%</span>
-                    </div>
-                  </td>
-                  <td className="text-right amount text-[#111827]">{formatFCFA(line.line_total)}</td>
-                  <td>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => duplicateLine(index)}
-                        className="btn-icon w-8 h-8"
-                        title="Dupliquer"
-                      >
-                        <Copy className="w-3.5 h-3.5 text-[#94A3B8]" />
-                      </button>
-                      <button
-                        onClick={() => removeLine(index)}
-                        className="btn-icon w-8 h-8 hover:bg-rose-50"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-[#94A3B8] hover:text-rose-500" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="amount text-[#111827] font-semibold">{formatFCFA(line.line_total)}</td>
+                    <td className="actions">
+                      <div className="flex items-center justify-end gap-0">
+                        <button
+                          onClick={() => duplicateLine(index)}
+                          className="btn-icon"
+                          style={{ width: 28, height: 28 }}
+                          title="Dupliquer"
+                        >
+                          <Copy className="w-3.5 h-3.5 text-[#94A3B8]" />
+                        </button>
+                        <button
+                          onClick={() => removeLine(index)}
+                          className="btn-icon hover:bg-rose-50"
+                          style={{ width: 28, height: 28 }}
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-[#94A3B8] hover:text-rose-500" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Notes & Attachments */}
-      <div className="card p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="form-label">Notes</label>
-            <textarea
-              className="form-textarea"
-              rows={4}
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Conditions, commentaires..."
-            />
-          </div>
-          <div>
-            <label className="form-label">Pièce jointe</label>
-            <div className="flex items-center gap-3">
-              <div className="flex-1 form-input flex items-center justify-between bg-slate-50">
-                <span className="text-sm text-[#64748B] truncate">
-                  {attachmentUploading ? 'Upload en cours...' : (attachment || 'Aucun fichier')}
-                </span>
-                {attachment && !attachmentUploading && (
-                  <button
-                    onClick={() => setAttachment(null)}
-                    className="text-slate-400 hover:text-rose-500"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <input
-                type="file"
-                className="hidden"
-                id="attachment-input"
-                onChange={handleAttachmentChange}
-                disabled={attachmentUploading}
+      <div className="card mb-5">
+        <div className="form-section">
+          <div className="form-section-title">Notes &amp; pièce jointe</div>
+          <div className="form-section-subtitle">Conditions de paiement, mentions ou documents associés</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="form-label">Notes</label>
+              <textarea
+                className="form-textarea"
+                rows={4}
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Conditions, commentaires..."
+                data-testid="facture-notes"
               />
-              <label
-                htmlFor="attachment-input"
-                className="btn-secondary btn-sm cursor-pointer shrink-0"
-              >
-                <Paperclip className="w-4 h-4" />
-                {attachment ? 'Changer' : 'Joindre'}
-              </label>
+            </div>
+            <div>
+              <label className="form-label">Pièce jointe</label>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 form-input flex items-center justify-between bg-slate-50">
+                  <span className="text-sm text-[#64748B] truncate">
+                    {attachmentUploading ? 'Upload en cours...' : (attachment || 'Aucun fichier')}
+                  </span>
+                  {attachment && !attachmentUploading && (
+                    <button
+                      onClick={() => setAttachment(null)}
+                      className="text-slate-400 hover:text-rose-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  id="attachment-input"
+                  onChange={handleAttachmentChange}
+                  disabled={attachmentUploading}
+                />
+                <label
+                  htmlFor="attachment-input"
+                  className="btn btn-secondary btn-sm cursor-pointer shrink-0"
+                >
+                  <Paperclip className="w-4 h-4" />
+                  {attachment ? 'Changer' : 'Joindre'}
+                </label>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Sticky totals bar */}
-      <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] shadow-lg z-10 py-4 px-6 -mx-6 md:-mx-8 mt-6 rounded-b-xl">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-x-8 gap-y-2 text-sm">
+      <div className="sticky bottom-0 bg-white border-t border-[#E2E8F0] shadow-lg z-10 py-3 px-4 md:px-6 -mx-4 md:-mx-6 lg:-mx-8 mt-4 rounded-b-xl" data-testid="facture-totals-bar">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-2 text-sm w-full lg:w-auto">
             <div>
-              <span className="text-[#94A3B8] text-xs uppercase font-semibold tracking-wide">Sous-total</span>
-              <div className="font-semibold font-mono">{formatFCFA(totals.subtotal)}</div>
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold tracking-wide">Sous-total</span>
+              <div className="font-semibold font-mono text-sm">{formatFCFA(totals.subtotal)}</div>
             </div>
             <div>
-              <span className="text-[#94A3B8] text-xs uppercase font-semibold tracking-wide">Remises</span>
-              <div className="font-semibold font-mono text-[#DC2626]">-{formatFCFA(totals.discountTotal)}</div>
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold tracking-wide">Remises</span>
+              <div className="font-semibold font-mono text-sm text-[#DC2626]">-{formatFCFA(totals.discountTotal)}</div>
             </div>
             <div>
-              <span className="text-[#94A3B8] text-xs uppercase font-semibold tracking-wide">Base taxable</span>
-              <div className="font-semibold font-mono">{formatFCFA(totals.taxableAmount)}</div>
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold tracking-wide">Base taxable</span>
+              <div className="font-semibold font-mono text-sm">{formatFCFA(totals.taxableAmount)}</div>
             </div>
             <div>
-              <span className="text-[#94A3B8] text-xs uppercase font-semibold tracking-wide">TVA</span>
-              <div className="font-semibold font-mono">{formatFCFA(totals.taxTotal)}</div>
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold tracking-wide">TVA</span>
+              <div className="font-semibold font-mono text-sm">{formatFCFA(totals.taxTotal)}</div>
             </div>
             <div>
-              <span className="text-[#94A3B8] text-xs uppercase font-semibold tracking-wide">Total TTC</span>
-              <div className="font-bold text-lg font-mono text-[#111827]">{formatFCFA(totals.grandTotal)}</div>
+              <span className="text-[#94A3B8] text-[10px] uppercase font-semibold tracking-wide">Total TTC</span>
+              <div className="font-bold text-base font-mono text-[#111827]" data-testid="facture-total">{formatFCFA(totals.grandTotal)}</div>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               onClick={() => navigate('/ventes/factures')}
-              className="btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm"
+              data-testid="facture-cancel-btn"
             >
               Annuler
             </button>
             <button
               onClick={() => addToast('info', 'Prévisualisation disponible après enregistrement.')}
-              className="btn-ghost btn-sm"
+              className="btn btn-ghost btn-sm"
             >
               <Eye className="w-4 h-4" />
               Aperçu
             </button>
             <button
               onClick={() => handleSave('brouillon')}
-              className="btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm"
               disabled={saving}
+              data-testid="facture-save-draft-btn"
             >
               <Save className="w-4 h-4" />
-              Enregistrer brouillon
+              Brouillon
             </button>
             <button
               onClick={() => handleSave('envoye')}
-              className="btn-primary btn-sm"
+              className="btn btn-primary btn-sm"
               disabled={saving}
+              data-testid="facture-save-send-btn"
             >
               <Send className="w-4 h-4" />
-              {saving ? 'Enregistrement...' : 'Enregistrer et envoyer'}
+              {saving ? 'Enregistrement…' : 'Enregistrer et envoyer'}
             </button>
           </div>
         </div>

@@ -12,7 +12,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1024));
-  const sidebarWidth = sidebarCollapsed ? 76 : 248;
+  const sidebarWidth = sidebarCollapsed ? 72 : 232;
 
   useEffect(() => {
     function handleResize() {
@@ -23,7 +23,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F7FB]">
+    <div className="min-h-screen bg-[#F5F7FB]" data-testid="app-layout">
       {/* Header */}
       <Header
         onMenuToggle={() => setMobileOpen(!mobileOpen)}
@@ -40,10 +40,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <main
-        className="pt-[72px] transition-all duration-250"
+        className="pt-[64px] transition-all duration-250 min-w-0"
         style={{ marginLeft: windowWidth >= 1024 ? sidebarWidth : 0 }}
+        data-testid="app-main"
       >
-        <div className="page-content">
+        <div className="page-content min-w-0">
           {children}
         </div>
       </main>

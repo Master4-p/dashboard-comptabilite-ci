@@ -197,19 +197,19 @@ export default function FournisseursDirectoryPage() {
           />
         </div>
       ) : (
-        <div className="card p-0 overflow-hidden">
+        <div className="card p-0" data-testid="fournisseurs-table-card">
           <div className="data-table-container">
-            <table className="data-table">
+            <table className="data-table" data-testid="fournisseurs-table">
               <thead>
                 <tr>
-                  <th className="w-48">Fournisseur</th>
-                  <th className="w-32">Catégorie</th>
-                  <th className="w-20 text-right">Dépenses</th>
-                  <th className="w-28 text-right">Total achats</th>
-                  <th className="w-28 text-right">Payé</th>
-                  <th className="w-28 text-right">Reste</th>
-                  <th className="w-28">Dernière activité</th>
-                  <th className="w-12">Actions</th>
+                  <th>Fournisseur</th>
+                  <th className="nowrap">Catégorie</th>
+                  <th className="nowrap text-right">Dépenses</th>
+                  <th className="nowrap text-right">Total achats</th>
+                  <th className="nowrap text-right">Payé</th>
+                  <th className="nowrap text-right">Reste</th>
+                  <th className="nowrap">Dernière activité</th>
+                  <th className="nowrap" style={{ width: 44 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -226,23 +226,24 @@ export default function FournisseursDirectoryPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.2 }}
+                      data-testid={`fournisseur-row-${f.nom}`}
                     >
-                      <td className="font-semibold text-[#111827]">{f.nom}</td>
-                      <td className="text-xs text-[#64748B]">
+                      <td className="font-semibold text-[#111827] truncate-cell" title={f.nom}>{f.nom}</td>
+                      <td className="nowrap text-xs text-[#64748B]">
                         {f.categorie ? categorieLabels[f.categorie] || f.categorie : <span className="text-[#CBD5E1]">—</span>}
                       </td>
-                      <td className="text-right">{f.depenses}</td>
-                      <td className="text-right amount">{formatFCFA(f.total)}</td>
-                      <td className="text-right amount text-[#059669]">{formatFCFA(f.payé)}</td>
+                      <td className="amount">{f.depenses}</td>
+                      <td className="amount">{formatFCFA(f.total)}</td>
+                      <td className="amount text-[#059669]">{formatFCFA(f.payé)}</td>
                       <td
-                        className={`text-right amount font-bold ${
+                        className={`amount font-bold ${
                           f.restant > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
                         }`}
                       >
                         {formatFCFA(f.restant)}
                       </td>
-                      <td className="text-[#111827]">{formatDate(f.derniereDepense)}</td>
-                      <td>
+                      <td className="nowrap date-cell text-[#111827]">{formatDate(f.derniereDepense)}</td>
+                      <td className="actions">
                         <ActionMenu
                           actions={[
                             { label: 'Voir la fiche', icon: Eye, onClick: () => {} },

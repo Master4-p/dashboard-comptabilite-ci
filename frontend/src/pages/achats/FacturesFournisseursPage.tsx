@@ -197,19 +197,19 @@ export default function FacturesFournisseursPage() {
           />
         </div>
       ) : (
-        <div className="card p-0 overflow-hidden">
+        <div className="card p-0" data-testid="factures-fournisseurs-table-card">
           <div className="data-table-container">
-            <table className="data-table">
+            <table className="data-table" data-testid="factures-fournisseurs-table">
               <thead>
                 <tr>
-                  <th className="w-24">N°</th>
-                  <th className="w-48">Fournisseur</th>
-                  <th className="w-32">Catégorie</th>
-                  <th className="w-28 text-right">Montant</th>
-                  <th className="w-28">Échéance</th>
-                  <th className="w-28">Statut</th>
-                  <th className="w-28 text-right">Reste</th>
-                  <th className="w-12">Actions</th>
+                  <th className="nowrap">N°</th>
+                  <th>Fournisseur</th>
+                  <th className="nowrap">Catégorie</th>
+                  <th className="nowrap text-right">Montant</th>
+                  <th className="nowrap">Échéance</th>
+                  <th className="nowrap">Statut</th>
+                  <th className="nowrap text-right">Reste</th>
+                  <th className="nowrap" style={{ width: 44 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -227,22 +227,22 @@ export default function FacturesFournisseursPage() {
                       new Date(item.date_echeance) <= new Date() &&
                       item.statut !== 'payee';
                     return (
-                      <tr key={item.id} className={echeanceAtteinte ? 'urgent' : ''}>
-                        <td className="font-mono text-xs text-[#2563EB] link-cell">
+                      <tr key={item.id} className={echeanceAtteinte ? 'urgent' : ''} data-testid={`facture-fournisseur-row-${item.id}`}>
+                        <td className="nowrap font-mono text-xs text-[#2563EB] link-cell">
                           {item.numero || <span className="text-[#CBD5E1]">—</span>}
                         </td>
-                        <td className="font-medium text-sm text-[#111827]">{item.fournisseur}</td>
-                        <td className="text-xs text-[#64748B]">
+                        <td className="font-medium text-sm text-[#111827] truncate-cell" title={item.fournisseur}>{item.fournisseur}</td>
+                        <td className="nowrap text-xs text-[#64748B]">
                           {item.categorie ? categorieLabels[item.categorie] || item.categorie : <span className="text-[#CBD5E1]">—</span>}
                         </td>
-                        <td className="text-right font-semibold font-mono text-sm">
+                        <td className="amount font-semibold">
                           {formatFCFA(item.montant)}
                         </td>
-                        <td>
+                        <td className="nowrap date-cell">
                           {item.date_echeance ? (
                             <span
                               className={`text-xs font-semibold ${
-                                echeanceAtteinte ? 'text-[#DC2626]' : ''
+                                echeanceAtteinte ? 'text-[#DC2626]' : 'text-[#111827]'
                               }`}
                             >
                               {formatDate(item.date_echeance)}
@@ -251,17 +251,17 @@ export default function FacturesFournisseursPage() {
                             <span className="text-[#CBD5E1]">—</span>
                           )}
                         </td>
-                        <td>
+                        <td className="badge-cell">
                           <StatusBadge statut={item.statut} type="fournisseur" />
                         </td>
                         <td
-                          className={`text-right font-semibold ${
+                          className={`amount font-bold ${
                             reste > 0 ? 'text-[#DC2626]' : 'text-[#059669]'
                           }`}
                         >
                           {formatFCFA(reste)}
                         </td>
-                        <td>
+                        <td className="actions">
                           <ActionMenu
                             actions={[
                               { label: 'Voir', icon: Eye, onClick: () => {} },

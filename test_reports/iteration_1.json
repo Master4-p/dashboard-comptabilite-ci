@@ -1,0 +1,82 @@
+{
+  "summary": "Frontend-only review of the rebuilt UI for `dashboard-comptabilite-ci` (Relais IT). Tested all 8 list routes + 3 form routes + dashboard at 1440x900 and 1280x800 viewports via Playwright against http://localhost:3001. Verified horizontal-scroll absence, table structure, ActionMenu portal + close behaviors, tab visibility on list views & hiding on form views, double-plus icon regression, header/sidebar/main layout, empty states. No console/page errors observed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "KPI cards (ClientsDirectoryPage, FournisseursDirectoryPage)",
+        "issue": "Spec asked for `data-testid=\"kpi-card\"` on the 4 KPI cards. The cards are rendered correctly visually, but NONE of them carry the `kpi-card` (or `kpi-card-*`) data-testid. `document.querySelectorAll('[data-testid^=\"kpi-card\"]')` returns 0 on both /ventes/clients and /achats/fournisseurs.",
+        "selector": "[data-testid='kpi-card']",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "Date inputs (NouvelleDepensePage and others)",
+        "issue": "Form date fields use native HTML5 `<input type=\"date\">` which shows the browser-default picker (placeholder `mm/dd/yyyy` in en-locale Chromium). The brand is FR (Côte d'Ivoire) and the rest of the UI uses dd/MM/yyyy. Should switch to a localized shadcn/date-picker component for consistency.",
+        "selector": "input[type='date']",
+        "priority": "LOW"
+      },
+      {
+        "component": "AchatsLayout tabs",
+        "issue": "data-testid slugs strip accents into hyphens (`achats-tab-d-penses`, `achats-tab-d-caissements`). The spec's glob `achats-tab-*` still matches, but the slugs are not readable and easy to type. Suggest using `achats-tab-depenses` / `achats-tab-decaissements`.",
+        "selector": "[data-testid^='achats-tab-']",
+        "priority": "LOW"
+      },
+      {
+        "component": "Active tab semantics",
+        "issue": "Active tab is only marked via `class=\"tab active\"`; no `aria-selected=\"true\"` is set. Minor a11y improvement.",
+        "selector": ".tab.active",
+        "priority": "LOW"
+      },
+      {
+        "component": "NouvelleDepensePage .form-section count",
+        "issue": "Spec wanted exactly 4 sections (Document, Fournisseur, Montant & dates, Notes complémentaires). DOM contains 5 elements with class `.form-section` — 4 with the expected titles plus 1 untitled section (likely the attachment / file-upload block). Visually fine, but if the testing rubric counts strictly on the count, flag this.",
+        "selector": ".form-section",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Forms (NouvelleDepensePage, NouvelleFacturePage, NouvelleProformaPage)",
+        "issues": [
+          "Date pickers fall back to browser locale (mm/dd/yyyy in test runner). Replace with a localized FR calendar."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Add `data-testid=\"kpi-card\"` (or `kpi-card-<key>`) to the 4 KPI cards in ClientsDirectoryPage and FournisseursDirectoryPage as the spec requires.",
+    "(Optional) Replace native HTML5 date inputs with a localized shadcn/date-picker component using dd/MM/yyyy.",
+    "(Optional) Rename Achats tab slugs to use plain ASCII without losing the meaning (`achats-tab-depenses`, `achats-tab-decaissements`).",
+    "(Optional) Add `aria-selected` to the active tab for a11y."
+  ],
+  "critical_code_review_comments": [
+    "ActionMenu.tsx correctly uses createPortal + position:fixed + close-on-scroll(capture)/resize/ESC/outside-click. Verified: closes on Escape, on outside click, and on real scroll events; dispatches `setOpen(false)` via a `scroll`-capture window listener. No clipping observed.",
+    "PageHeader strips leading `+` and a duplicate plus icon: no button on any tested screen renders `++` (verified via `textContent.includes('++')` across 11 routes).",
+    "AppLayout pt-[64px] + sidebar 232/72 confirmed: header is `position:fixed; height:64`, main has `paddingTop:64px; marginLeft:232px`. No overlap with page-title.",
+    "All tested routes (factures, proformas, clients, encaissements, depenses, factures-fournisseurs, fournisseurs, decaissements) have `documentElement.scrollWidth == innerWidth` at both 1440x900 and 1280x800 — horizontal scroll fully eliminated.",
+    "Form pages /ventes/factures/nouvelle, /ventes/proformas/nouvelle, /achats/depenses/nouvelle properly hide both ventes-tab-* and achats-tab-* selectors (0 occurrences).",
+    "factures-table headers verified: 7 columns exactly = ['N°', 'Client', 'Émission', 'Montant', 'Reste', 'Statut', 'Actions']. clients-table headers: 8 columns exactly = ['Nom', 'Contact', 'Factures', 'Total facturé', 'Encours', 'Dernière activité', 'Statut', 'Actions'].",
+    "ActionMenu dropdown items on factures row: ['Voir', 'Modifier', 'Télécharger PDF', 'Enregistrer acompte', 'Marquer payée', 'Envoyer relance', 'Dupliquer', 'Supprimer'] — matches spec.",
+    "EmptyState testid is present on /achats/depenses with primary action `Ajouter une dépense` having `data-testid=\"empty-state-primary-action\"`. ✓",
+    "No console errors and no pageerror events observed on any route navigated.",
+    "Sticky totals bar present on /ventes/factures/nouvelle and /ventes/proformas/nouvelle (1 sticky element each). Not present on /achats/depenses/nouvelle (acceptable — simpler form).",
+    "Missing: `data-testid=\"kpi-card\"` attribute on KPI cards (see ui_bugs).",
+    "ActionMenu dropdown is correctly rendered as a direct child of <body> (portal target verified)."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "not tested (frontend-only per request)",
+    "frontend": "95% (12/13 acceptance items fully pass; 1 partial — KPI testid missing)"
+  },
+  "test_credentials": "No authentication required; AuthContext is mocked. All routes accessible directly at http://localhost:3001/.",
+  "seed_data_creation": "None — used existing seeded data (FA-2026-001 Envoyé / FA-2026-002 Soldé, encaissements VIR-001/VIR-002, customer SCI GROUPE BEHIRA, etc.).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Server is a single Express on :3001 serving both API and built frontend. No auth. Use viewport 1440x900 (and optionally 1280x800) for layout checks. Data-testids to rely on: page-title, page-header-primary-action, page-header-secondary-action, action-menu-trigger, action-menu-dropdown, action-menu-item-<slug>, factures-table, proformas-table (only when table exists), clients-table, fournisseurs-table, empty-state, empty-state-primary-action, ventes-tab-*, achats-tab-* (note slugified accents). KPI cards currently DO NOT have a kpi-card testid — verify after main agent adds it.",
+  "rca of the issue": "Missing KPI testids: most likely the KPI card markup in ClientsDirectoryPage.tsx and FournisseursDirectoryPage.tsx was written before the testid contract was finalized. The cards are rendered correctly but the `data-testid=\"kpi-card\"` attribute was simply not added to the card root. Quick fix: add `data-testid=\"kpi-card\"` (or a unique `kpi-card-<key>` per card) on the four `<div>`s wrapping each KPI in both pages."
+}

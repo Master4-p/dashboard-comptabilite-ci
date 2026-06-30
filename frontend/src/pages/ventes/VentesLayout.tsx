@@ -1,5 +1,4 @@
 import { Outlet, useLocation, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import useScrollToTop from '../../hooks/useScrollToTop';
 
 const tabs = [
@@ -14,38 +13,28 @@ export default function VentesLayout() {
   useScrollToTop();
 
   const isActive = (to: string) => {
-    // Exact match for the leaf route
     return location.pathname === to || location.pathname.startsWith(to + '/');
   };
 
-  return (
-    <div className="p-6">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-6"
-      >
-        <nav className="text-xs text-[#94A3B8] mb-2 flex items-center gap-1">
-          <span>Relais IT</span>
-          <span className="text-[#CBD5E1]">/</span>
-          <span>Ventes</span>
-        </nav>
-        <h1 className="text-2xl font-bold text-[#111827]">Ventes</h1>
-        <p className="text-sm text-[#64748B] mt-1">Factures, proformas et encaissements</p>
-      </motion.div>
+  // Hide tabs on create/edit screens — each form page already shows its own PageHeader
+  const isFormView = /\/(nouvelle|modifier|\d+\/modifier)(\/|$)/.test(location.pathname);
 
-      <div className="tabs mb-4">
-        {tabs.map((tab) => (
-          <Link
-            key={tab.to}
-            to={tab.to}
-            className={`tab ${isActive(tab.to) ? 'active' : ''}`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
+  return (
+    <div className="px-4 md:px-6 lg:px-8 py-5 md:py-6 max-w-[1400px] mx-auto" data-testid="ventes-layout">
+      {!isFormView && (
+        <div className="tabs" data-testid="ventes-tabs">
+          {tabs.map((tab) => (
+            <Link
+              key={tab.to}
+              to={tab.to}
+              data-testid={`ventes-tab-${tab.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+              className={`tab ${isActive(tab.to) ? 'active' : ''}`}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
+      )}
 
       <Outlet />
     </div>

@@ -17,7 +17,12 @@ const navItems = [
 
 function SidebarItem({ to, icon: Icon, label, collapsed, active }: { to: string; icon: any; label: string; collapsed: boolean; active: boolean }) {
   return (
-    <Link to={to} className={`sidebar-nav-item text-sm h-11 py-2.5 ${active ? 'active' : ''} ${collapsed ? 'justify-center' : ''}`} title={collapsed ? label : undefined}>
+    <Link
+      to={to}
+      data-testid={`sidebar-link-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+      className={`sidebar-nav-item text-sm ${active ? 'active' : ''} ${collapsed ? 'justify-center' : ''}`}
+      title={collapsed ? label : undefined}
+    >
       <Icon className="sidebar-icon w-5 h-5" />
       {!collapsed && <span className="truncate">{label}</span>}
     </Link>
@@ -26,7 +31,7 @@ function SidebarItem({ to, icon: Icon, label, collapsed, active }: { to: string;
 
 export default function Sidebar({ collapsed, mobileOpen, onClose, onToggle }: { collapsed: boolean; mobileOpen: boolean; onClose: () => void; onToggle?: () => void }) {
   const location = useLocation();
-  const width = collapsed ? 76 : 248;
+  const width = collapsed ? 72 : 232;
 
   // Determine if a route is active (exact match or parent match for ventes/achats)
   const isActive = (to: string) => {
@@ -43,14 +48,14 @@ export default function Sidebar({ collapsed, mobileOpen, onClose, onToggle }: { 
         <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />
       )}
       <aside
-        className="sidebar px-3"
+        className="sidebar px-2"
         style={{
-          width: mobileOpen ? 248 : width,
+          width: mobileOpen ? 232 : width,
           transform: mobileOpen ? 'translateX(0)' : undefined,
         }}
       >
         {/* Logo */}
-        <div className="h-[76px] flex items-center px-5 border-b border-[#E2E8F0]">
+        <div className="h-[64px] flex items-center px-4 border-b border-[#E2E8F0]">
           <img
             src="/logo-sm.png"
             alt="Relais IT"

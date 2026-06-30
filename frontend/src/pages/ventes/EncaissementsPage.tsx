@@ -375,19 +375,19 @@ export default function EncaissementsPage() {
           />
         </div>
       ) : (
-        <div className="card p-0 overflow-hidden">
+        <div className="card p-0" data-testid="encaissements-table-card">
           <div className="data-table-container">
-            <table className="data-table">
+            <table className="data-table" data-testid="encaissements-table">
               <thead>
                 <tr>
-                  <th className="w-24">Date</th>
-                  <th className="w-24">Référence</th>
-                  <th className="w-24">Facture</th>
-                  <th className="w-40">Client</th>
-                  <th className="w-24">Méthode</th>
-                  <th className="w-28 text-right">Montant</th>
-                  <th className="w-32">Notes</th>
-                  <th className="w-12 text-right">Actions</th>
+                  <th className="nowrap">Date</th>
+                  <th className="nowrap">Référence</th>
+                  <th className="nowrap">Facture</th>
+                  <th>Client</th>
+                  <th className="nowrap">Méthode</th>
+                  <th className="nowrap text-right">Montant</th>
+                  <th>Notes</th>
+                  <th className="nowrap" style={{ width: 44 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -398,19 +398,20 @@ export default function EncaissementsPage() {
                   const customer = p.customer_id ? customerMap.get(p.customer_id) : null;
                   const invoice = p.invoice_id ? invoiceMap.get(p.invoice_id) : null;
                   return (
-                    <tr key={p.id}>
-                      <td>{formatDate(p.payment_date)}</td>
-                      <td className="font-mono text-xs text-[#64748B]">{p.reference || <span className="text-[#CBD5E1]">—</span>}</td>
-                      <td className="font-mono text-xs text-[#2563EB] link-cell">{invoice?.numero || p.invoice_numero || <span className="text-[#CBD5E1]">—</span>}</td>
-                      <td className="font-semibold text-[#111827]">{customer?.name || p.customer_name || <span className="text-[#CBD5E1]">—</span>}</td>
-                      <td><span className="badge-gray">{p.payment_method}</span></td>
-                      <td className="text-right amount text-[#059669]">{formatFCFA(p.amount)}</td>
-                      <td className="text-xs text-[#64748B] max-w-[200px] truncate">{p.notes || <span className="text-[#CBD5E1]">—</span>}</td>
-                      <td>
+                    <tr key={p.id} data-testid={`encaissement-row-${p.id}`}>
+                      <td className="nowrap date-cell">{formatDate(p.payment_date)}</td>
+                      <td className="nowrap font-mono text-xs text-[#64748B]">{p.reference || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="nowrap font-mono text-xs text-[#2563EB] link-cell">{invoice?.numero || p.invoice_numero || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="font-semibold text-[#111827] truncate-cell" title={customer?.name || p.customer_name || ''}>{customer?.name || p.customer_name || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="badge-cell"><span className="badge-gray">{p.payment_method}</span></td>
+                      <td className="amount text-[#059669]">{formatFCFA(p.amount)}</td>
+                      <td className="text-xs text-[#64748B] truncate-cell">{p.notes || <span className="text-[#CBD5E1]">—</span>}</td>
+                      <td className="actions">
                         <button
                           onClick={() => handleDelete(p.id)}
                           className="btn-icon hover:bg-rose-50 text-slate-400 hover:text-rose-500"
                           title="Supprimer"
+                          data-testid={`encaissement-delete-${p.id}`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

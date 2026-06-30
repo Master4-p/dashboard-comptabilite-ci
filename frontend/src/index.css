@@ -41,9 +41,11 @@
   .btn {
     @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed;
     border-radius: 10px;
-    height: 44px;
-    padding: 0 20px;
+    height: 40px;
+    padding: 0 16px;
     font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
   }
   .btn-primary {
     @apply btn;
@@ -66,6 +68,16 @@
     background: #F8FAFC;
     border-color: #CBD5E1;
   }
+  .btn-outline {
+    @apply btn;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover {
+    background: #F8FAFC;
+    color: var(--text-primary);
+  }
   .btn-ghost {
     @apply btn;
     background: transparent;
@@ -85,14 +97,14 @@
   }
   .btn-sm {
     height: 36px;
-    padding: 0 14px;
+    padding: 0 12px;
     font-size: 13px;
   }
   .btn-icon {
     @apply inline-flex items-center justify-center transition-all duration-150;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
   }
   .btn-icon:hover {
     background: #F1F5F9;
@@ -115,12 +127,44 @@
     transform: translateY(-1px);
   }
 
+  /* Glass panel for forms (was missing — caused NouvelleDepensePage to render unstyled) */
+  .glass-panel {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    padding: 24px;
+  }
+
+  /* Form sections inside a card */
+  .form-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-section:last-child {
+    border-bottom: none;
+  }
+  .form-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-section-subtitle {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
   /* Form inputs */
   .form-input {
     @apply w-full transition-all duration-150 focus:outline-none;
-    height: 44px;
-    padding: 0 14px;
-    border-radius: 10px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     background: white;
     font-size: 14px;
@@ -136,6 +180,12 @@
   .form-input::placeholder {
     color: var(--text-tertiary);
   }
+  .form-input.sm {
+    height: 32px;
+    padding: 0 8px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
   .form-label {
     display: block;
     font-size: 12px;
@@ -148,13 +198,13 @@
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
+    background-position: right 10px center;
+    padding-right: 32px;
   }
   .form-textarea {
     @apply form-input;
     height: auto;
-    padding: 12px 14px;
+    padding: 10px 12px;
     resize: vertical;
     min-height: 80px;
   }
@@ -162,10 +212,11 @@
   /* Badges */
   .badge {
     @apply inline-flex items-center gap-1 font-semibold;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
+    white-space: nowrap;
   }
   .badge-blue {
     @apply badge;
@@ -198,20 +249,27 @@
     color: var(--text-secondary);
     border: 1px solid var(--border);
   }
+  .badge-slate {
+    @apply badge;
+    background: #F1F5F9;
+    color: var(--text-secondary);
+  }
 
-  /* Table */
+  /* ============================
+     DATA TABLE - rewritten for desktop readability
+     ============================ */
   .data-table {
     width: 100%;
-    table-layout: fixed;
+    table-layout: auto;          /* was fixed → caused overflow + clipped text */
     border-collapse: collapse;
   }
   .data-table th {
     @apply text-left font-semibold uppercase tracking-wider;
     padding: 10px 12px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     color: #64748B;
     background: #F8FAFC;
     border-bottom: 1px solid #E2E8F0;
@@ -224,12 +282,22 @@
     color: #334155;
     border-bottom: 1px solid #E2E8F0;
     vertical-align: middle;
+    /* No more global white-space:nowrap - allows wrapping for long text */
+  }
+  /* Specific cells that should never wrap */
+  .data-table td.nowrap,
+  .data-table th.nowrap,
+  .data-table .amount,
+  .data-table .date-cell,
+  .data-table .badge-cell {
+    white-space: nowrap;
+  }
+  /* Long text cells truncate gracefully */
+  .data-table td.truncate-cell {
+    max-width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .data-table td.wrap {
-    white-space: normal;
   }
   .data-table tbody tr {
     transition: background 0.15s;
@@ -253,12 +321,12 @@
     font-family: 'IBM Plex Mono', monospace;
     font-variant-numeric: tabular-nums;
     text-align: right;
-    white-space: nowrap;
   }
   .data-table td.actions {
-    width: 48px;
+    width: 44px;
     padding: 6px;
     text-align: right;
+    overflow: visible;            /* never clip the action menu trigger */
   }
   .data-table .text-secondary {
     color: #94A3B8;
@@ -272,12 +340,29 @@
   .data-table .link-cell:hover {
     text-decoration: underline;
   }
+  /* IMPORTANT: container should NOT have overflow:hidden — would clip portal-like menus. Use overflow-x:auto only when content overflows */
   .data-table-container {
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     border-radius: 14px;
     border: 1px solid var(--border);
     background: var(--surface);
+  }
+  /* On desktop, no need for forced overflow if the table fits */
+  @media (min-width: 1280px) {
+    .data-table-container {
+      overflow-x: visible;
+    }
+  }
+
+  /* Compact form inputs used inside table cells (line items editor) */
+  .data-table .form-input,
+  .data-table .form-select {
+    height: 34px;
+    padding: 0 8px;
+    font-size: 13px;
+    border-radius: 6px;
   }
 
   /* Status indicators */
@@ -299,7 +384,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 72px;
+    height: 64px;
     z-index: 50;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
@@ -307,14 +392,14 @@
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    gap: 16px;
+    padding: 0 20px;
+    gap: 14px;
   }
 
   /* Sidebar */
   .sidebar {
     position: fixed;
-    top: 72px;
+    top: 64px;
     left: 0;
     bottom: 0;
     background: var(--surface);
@@ -337,7 +422,7 @@
   }
   .sidebar-nav-item {
     @apply flex items-center gap-3 font-medium transition-all duration-150;
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-radius: 10px;
     font-size: 14px;
     color: var(--text-secondary);
@@ -400,13 +485,13 @@
     background: var(--surface);
     border-radius: 12px;
     border: 1px solid var(--border);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
     padding: 6px;
     min-width: 200px;
   }
   .dropdown-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-150;
-    font-size: 14px;
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-all duration-150;
+    font-size: 13px;
     color: var(--text-primary);
     cursor: pointer;
   }
@@ -428,7 +513,7 @@
   /* Search */
   .search-command {
     @apply flex items-center gap-3 transition-all duration-150;
-    height: 44px;
+    height: 40px;
     padding: 0 14px;
     border-radius: 10px;
     border: 1px solid var(--border);
@@ -472,20 +557,21 @@
   /* Page content */
   .page-content {
     padding: 0;
+    min-width: 0;
   }
   .page-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.2;
   }
   .page-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
     margin-top: 4px;
   }
   .breadcrumb {
-    @apply flex items-center gap-1 text-sm;
+    @apply flex items-center gap-1 text-xs;
     color: var(--text-tertiary);
   }
   .breadcrumb-separator {
@@ -496,53 +582,57 @@
     font-weight: 600;
   }
 
-  /* Tabs */
+  /* Tabs - stable layout, no jumping between pages */
   .tabs {
-    @apply flex items-center gap-1;
+    @apply flex items-center;
+    gap: 2px;
     border-bottom: 1px solid var(--border);
-    padding: 0 4px;
     margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
     @apply font-medium transition-all duration-150;
-    padding: 12px 20px;
-    font-size: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
     color: var(--text-secondary);
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     margin-bottom: -1px;
     cursor: pointer;
     white-space: nowrap;
-    border-radius: 8px 8px 0 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .tab:hover {
     color: var(--text-primary);
-    background: #F8FAFC;
   }
   .tab.active {
     color: var(--navy);
     border-bottom-color: var(--navy);
     font-weight: 600;
-    background: #F1F5F9;
   }
 
   /* Filter bar */
   .filter-bar {
     @apply flex items-center gap-3 flex-wrap;
-    padding: 12px 16px;
+    padding: 12px 14px;
     background: var(--surface);
     border-radius: 12px;
     border: 1px solid var(--border);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .filter-bar .search-field {
     @apply flex items-center gap-2;
     flex: 1;
-    min-width: 200px;
-    max-width: 400px;
+    min-width: 220px;
+    max-width: 380px;
   }
   .filter-bar .search-field input {
     @apply form-input;
-    padding-left: 38px;
+    padding-left: 36px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: 12px center;
@@ -596,10 +686,10 @@
     font-size: 14px;
     color: var(--text-secondary);
     margin-top: 8px;
-    max-width: 400px;
+    max-width: 420px;
   }
   .empty-state-actions {
-    @apply flex items-center gap-3;
+    @apply flex items-center gap-3 flex-wrap justify-center;
     margin-top: 20px;
   }
 
@@ -624,8 +714,8 @@
   }
   .pagination-btn {
     @apply flex items-center justify-center transition-all duration-150;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
@@ -644,14 +734,26 @@
     cursor: not-allowed;
   }
 
-  /* Overflow menu */
+  /* Overflow / action menu trigger */
   .overflow-menu-btn {
     @apply btn-icon;
-    opacity: 0;
+    width: 32px;
+    height: 32px;
+    opacity: 0.55;
   }
   .data-table tbody tr:hover .overflow-menu-btn,
-  .overflow-menu-btn:focus {
+  .overflow-menu-btn:focus,
+  .overflow-menu-btn:hover {
     opacity: 1;
+  }
+  /* Always visible on touch */
+  @media (hover: none) {
+    .overflow-menu-btn { opacity: 1; }
+  }
+
+  /* Action menu dropdown rendered with position:fixed → must escape any clipping ancestor */
+  .action-menu-dropdown {
+    z-index: 9999;
   }
 
   /* Scrollbar */
@@ -687,31 +789,25 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .page-content {
-    padding: 0;
-  }
   .app-header {
     padding: 0 16px;
   }
 }
 
 @media (max-width: 768px) {
-  .page-content {
-    padding: 0;
-  }
   .app-header {
-    height: 64px;
+    height: 56px;
     padding: 0 12px;
   }
   .page-title {
-    font-size: 20px;
+    font-size: 18px;
   }
   .filter-bar .search-field {
     max-width: none;
     width: 100%;
   }
   .data-table-container {
-    overflow-x: scroll;
+    overflow-x: auto;
     scrollbar-width: thin;
   }
   .data-table th,
@@ -721,5 +817,11 @@
   }
   .overflow-menu-btn {
     opacity: 1;
+  }
+  .form-section {
+    padding: 16px;
+  }
+  .glass-panel {
+    padding: 16px;
   }
 }
