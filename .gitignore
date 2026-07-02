@@ -11,6 +11,10 @@ backend/dist/
 frontend/.env
 backend/.env
 
+# Données locales (Phase 3 : la base de production est PostgreSQL/Supabase)
+backend/data/*.db
+backend/uploads/
+
 *.log
 dev.log
 .env.*

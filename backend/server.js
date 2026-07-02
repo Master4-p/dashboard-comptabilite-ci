@@ -107,10 +107,11 @@ app.get('/api/stats/monthly', async (req, res) => {
 
       months.push(monthLabel);
 
-      const e = await dbAll(`SELECT COALESCE(SUM(montant), 0) as total FROM clients WHERE type='facture' AND statut='solde' AND strftime('%Y-%m', date_emission) = ?`, [yearMonth]);
-      const de = await dbAll(`SELECT COALESCE(SUM(montant), 0) as total FROM fournisseurs WHERE statut='payee' AND strftime('%Y-%m', date_depense) = ?`, [yearMonth]);
-      const f = await dbAll(`SELECT COUNT(*) as count FROM clients WHERE type='facture' AND strftime('%Y-%m', date_emission) = ?`, [yearMonth]);
-      const dp = await dbAll(`SELECT COUNT(*) as count FROM fournisseurs WHERE strftime('%Y-%m', date_depense) = ?`, [yearMonth]);
+      // substr(date, 1, 7) = 'YYYY-MM' : portable SQLite/PostgreSQL (dates stockées en TEXT ISO)
+      const e = await dbAll(`SELECT COALESCE(SUM(montant), 0) as total FROM clients WHERE type='facture' AND statut='solde' AND substr(date_emission, 1, 7) = ?`, [yearMonth]);
+      const de = await dbAll(`SELECT COALESCE(SUM(montant), 0) as total FROM fournisseurs WHERE statut='payee' AND substr(date_depense, 1, 7) = ?`, [yearMonth]);
+      const f = await dbAll(`SELECT COUNT(*) as count FROM clients WHERE type='facture' AND substr(date_emission, 1, 7) = ?`, [yearMonth]);
+      const dp = await dbAll(`SELECT COUNT(*) as count FROM fournisseurs WHERE substr(date_depense, 1, 7) = ?`, [yearMonth]);
 
       encaissements.push(e[0]?.total || 0);
       decaissements.push(de[0]?.total || 0);

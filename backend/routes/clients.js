@@ -99,6 +99,8 @@ router.patch('/:id/statut', async (req, res) => {
 // GET /api/clients/stats — statistiques (DOIT être avant /:id)
 router.get('/stats/global', async (req, res) => {
   try {
+    // Date charnière calculée en JS : date('now', '-30 days') n'existe qu'en SQLite
+    const cutoff30 = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
     const rows = await dbAll(`
       SELECT
         SUM(CASE WHEN type='facture' AND statut != 'solde' THEN montant - montant_acompte ELSE 0 END) as attente,
@@ -106,9 +108,9 @@ router.get('/stats/global', async (req, res) => {
         SUM(CASE WHEN type='facture' THEN montant_acompte ELSE 0 END) as acompte,
         SUM(CASE WHEN type='proforma' THEN montant ELSE 0 END) as proformas,
         COUNT(CASE WHEN type='facture' AND statut != 'solde' AND statut = 'relance' THEN 1 END) as relances_statut,
-        COUNT(CASE WHEN type='facture' AND statut != 'solde' AND date_emission < date('now', '-30 days') THEN 1 END) as relances_30j
+        COUNT(CASE WHEN type='facture' AND statut != 'solde' AND date_emission < ? THEN 1 END) as relances_30j
       FROM clients
-    `);
+    `, [cutoff30]);
     res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
